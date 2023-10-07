@@ -1,3 +1,6 @@
+# Additional files
+notes.md
+
 # Logs
 logs
 *.log
@@ -89,6 +92,7 @@ out
 
 # Nuxt.js build / generate output
 .nuxt
+#   ignores dist directory 
 dist
 
 # Gatsby files

@@ -1,12 +1,46 @@
 <!DOCTYPE html>
 <html lang="en">
+
 <head>
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
-  <title>Document</title>
+  <title>mtoab</title>
   <script type="module" src="/dist/main.js"></script>
 </head>
+
 <body>
-  hi
+  <div class="btn-con">
+    <button class="vault valut1" id="valut1">Valut 1</button>
+    <button class="vault valut1" id="valut2">Valut 2</button>
+    <button class="vault valut1" id="valut3">Valut 3</button>
+    <button class="vault valut1" id="valut4">Valut 4</button>
+  </div>
+
+  <select id="char-select">
+    <option value="amara">Amara</option>
+  </select>
+
+  <div id="level">Level: <span id="level-num">0</span></div>
+  <button id="increase-level">+</button>
+  <button id="decrease-levek">-</button>
+  <div id="scenerio">Scenerio: <span id="scene-num">0</span></div>
+  <button id="increase-scenerio">+</button>
+  <button id="decrease-scenerio">-</button>
+
+  <label for="name">
+    <select id="item-type">
+      <option value="weapons">Weapon</option>
+      <option value="shields">Shield</option>
+      <option value="grenades">Grenade</option>
+      <option value="mods">Character Mod</option>
+      <option value="backpack">Backpack</option>
+    </select>
+  </label>
+  <input type="text" id="name">
+  <button id="add-item">Add item</button>
+
+
+
 </body>
+
 </html>
