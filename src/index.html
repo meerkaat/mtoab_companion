@@ -5,41 +5,89 @@
   <meta charset="UTF-8">
   <meta name="viewport" content="width=device-width, initial-scale=1.0">
   <title>mtoab</title>
+  <link rel="stylesheet" href="reset.css" />
+  <link rel="stylesheet" href="styles.css" />
   <script type="module" src="/dist/main.js"></script>
 </head>
 
 <body>
   <div class="btn-con">
+    <button class="vault valut1" id="valut0">Valut 0</button>
     <button class="vault valut1" id="valut1">Valut 1</button>
     <button class="vault valut1" id="valut2">Valut 2</button>
     <button class="vault valut1" id="valut3">Valut 3</button>
-    <button class="vault valut1" id="valut4">Valut 4</button>
   </div>
 
   <select id="char-select">
     <option value="amara">Amara</option>
+    <option value="athena">Athena</option>
   </select>
 
   <div id="level">Level: <span id="level-num">0</span></div>
+  <button id="decrease-level">-</button>
   <button id="increase-level">+</button>
-  <button id="decrease-levek">-</button>
-  <div id="scenerio">Scenerio: <span id="scene-num">0</span></div>
-  <button id="increase-scenerio">+</button>
-  <button id="decrease-scenerio">-</button>
-
-  <label for="name">
-    <select id="item-type">
-      <option value="weapons">Weapon</option>
-      <option value="shields">Shield</option>
-      <option value="grenades">Grenade</option>
-      <option value="mods">Character Mod</option>
-      <option value="backpack">Backpack</option>
-    </select>
-  </label>
-  <input type="text" id="name">
-  <button id="add-item">Add item</button>
+  <div id="scenerio">Scenario: <span id="scene-num">0</span></div>
+  <button id="decrease-scenario">-</button>
+  <button id="increase-scenario">+</button>
 
 
+  <div class="equipped-con">
+    <h2>Equipped Gear</h2>
+    <p id="weapons">Weapons</p>
+    <ul id="equipped-weapons-ul">
+      <!-- <li><span>delete</span></li> -->
+    </ul>
+    <p id="grenades">Grenades</p>
+    <ul id="equipped-grenades-ul">
+    </ul>
+    <p id="shields">Shields</p>
+    <ul id="equipped-shields-ul">
+    </ul>
+    <p id="misc">Misc.</p>
+    <ul id="equipped-misc-ul">
+    </ul>
+    <label for="equppied-item-input">
+      <select id="eqipped-item-type">
+        <option value="weapons">Weapon</option>
+        <option value="shields">Shield</option>
+        <option value="grenades">Grenade</option>
+        <option value="mods">Character Mod</option>
+        <option value="backpack">Backpack</option>
+      </select>
+    </label>
+    <input type="text" id="eqipped-item-input">
+    <button id="eqipped-add-item">Add item</button>
+  </div>
+
+  <div class="inventory-con">
+    <h2>Inventory</h2>
+    <p class="inventory" id="weapons-inv">Weapons</p>
+    <ul id="inv-weapons-ul">
+    </ul>
+    <p class="inventory" id="shields-inv">Shields</p>
+    <ul id="inv-shields-ul">
+    </ul>
+    <p class="inventory" id="grenades-inv">Grenades</p>
+    <ul id="inv-grenades-ul">
+    </ul>
+    <p class="inventory" id="char-mods-inv">Character Mods</p>
+    <ul id="inv-mods-ul">
+    </ul>
+    <p class="inventory" id="misc-inv">Misc.</p>
+    <ul id="inv-misc-ul">
+    </ul>
+    <label for="inv-item-input">
+      <select id="inv-item-type">
+        <option value="weapons">Weapon</option>
+        <option value="shields">Shield</option>
+        <option value="grenades">Grenade</option>
+        <option value="mods">Character Mod</option>
+        <option value="backpack">Backpack</option>
+      </select>
+    </label>
+    <input type="text" id="inv-item-input">
+    <button id="inv-add-item">Add item</button>
+  </div>
 
 </body>
 
