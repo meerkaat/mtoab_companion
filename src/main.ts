@@ -11,32 +11,56 @@ type JsonValue =
   | { [key: string]: JsonValue | undefined };
 
 type ItemType =
-  // | "grenade"
+  | "weapon"
+  | "grenade"
+  | "shield"
   | "mod"
-  // | "shield"
-  | "weapon_backpack"
-  | "weapon_equipped";
+  | "misc";
 
 type Item = {
   type: ItemType;
   name: string;
 };
 
+// let sampleItem: Item = {type: "weapon", name: "gun",}
+
 type VaultData = {
   name: string;
-  items: Item[];
-  // items: {
-  //   equippedWeapons: string[];
-  //   grenades: string[];
-  //   charMod: string[];
-  // };
+  equippedItems: Item[];
+  inventory: Item[];
 };
+
+// let sampletVD: VaultData = {
+//   name: amara,
+//   equippedItems: [
+//     { type: "weapon", name: "gun" },
+//   ],
+//   inventory: [
+//     { type: "weapon", name: "gun" },
+//   ],
+// };
 
 type State = {
   level: number;
   scenario: number;
   vaults: VaultData[];
 };
+
+// let sample: State = {
+//   level: 0,
+//   scenario: 0,
+//   vaults: [
+//     {
+//       name: amara,
+//       equippedItems: [
+//         { type: "weapon", name: "gun" },
+//       ],
+//       inventory: [
+//         { type: "weapon", name: "gun" },
+//       ],
+//     },
+//   ],
+// };
 
 function getElementByIdOrThrow<T extends HTMLElement>(
   selector: string,
@@ -47,28 +71,39 @@ function getElementByIdOrThrow<T extends HTMLElement>(
   return element as T;
 }
 
-function main() {
-  const addBtn = getElementByIdOrThrow<HTMLButtonElement>("add-item");
-  const itemInput = getElementByIdOrThrow<HTMLInputElement>("item-input");
-  const selector = getElementByIdOrThrow<HTMLSelectElement>("item-type");
-  const equipped = getElementByIdOrThrow<HTMLParagraphElement>("weapons");
+//*=========================================== MAIN ===========================================*/
 
-  const orderedList = document.createElement("ol");
+function main() {
+  const equipItem = getElementByIdOrThrow<HTMLButtonElement>("equip-item");
+  const equipItemInput = getElementByIdOrThrow<HTMLInputElement>(
+    "equip-item-input",
+  );
+  const equipItemType = getElementByIdOrThrow<HTMLSelectElement>(
+    "equip-item-type",
+  );
+  const equipWeapon = getElementByIdOrThrow<HTMLParagraphElement>(
+    "equip-weapons-ul",
+  );
 
   const itemToParagraphMap = {};
 
-  const addItemInputToInventory = (element: HTMLParagraphElement): void => {
-    let text = itemInput.value;
-    const listItem = document.createElement("li");
-    listItem.textContent = text;
-    orderedList.append(listItem);
-    element.append(orderedList);
+  const addItemToUL = (
+    input: HTMLInputElement,
+    type: HTMLSelectElement,
+  ): void => {
+    let newLI = document.createElement("li");
+    let ul = (type.id === "equip-item-type")
+      ? getElementByIdOrThrow<HTMLUListElement>(`equip-${type.value}-ul`)
+      : getElementByIdOrThrow<HTMLUListElement>(`inv-${type.value}-ul`);
+
+    newLI.textContent = input.value;
+    ul.append(newLI);
   };
 
-  addBtn.addEventListener("click", () => {
-    let type = selector.value;
-    console.log(type);
-    addItemInputToInventory(type);
+  equipItem.addEventListener("click", () => {
+    addItemToUL(equipItemInput, equipItemType);
+    // let x = orderedList.getElementsByTagName("li");
+    // console.log(x[0].textContent);
   });
 }
 

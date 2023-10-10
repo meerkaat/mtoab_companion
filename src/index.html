@@ -31,38 +31,50 @@
   <button id="increase-scenario">+</button>
 
 
-  <div class="equipped-con">
-    <h2>Equipped Gear</h2>
-    <p id="weapons">Weapons</p>
-    <ul id="equipped-weapons-ul">
-      <!-- <li><span>delete</span></li> -->
-    </ul>
-    <p id="grenades">Grenades</p>
-    <ul id="equipped-grenades-ul">
-    </ul>
-    <p id="shields">Shields</p>
-    <ul id="equipped-shields-ul">
-    </ul>
-    <p id="misc">Misc.</p>
-    <ul id="equipped-misc-ul">
-    </ul>
-    <label for="equppied-item-input">
-      <select id="eqipped-item-type">
+  <div class="equip-con">
+    <label for="equip-item-input">
+      <select id="equip-item-type">
         <option value="weapons">Weapon</option>
         <option value="shields">Shield</option>
         <option value="grenades">Grenade</option>
-        <option value="mods">Character Mod</option>
-        <option value="backpack">Backpack</option>
+        <option value="misc">Misc</option>
       </select>
     </label>
-    <input type="text" id="eqipped-item-input">
-    <button id="eqipped-add-item">Add item</button>
+    <input type="text" id="equip-item-input">
+    <button id="equip-item">Add item</button>
+    <h2>Equipped Gear</h2>
+    <p id="weapons">Weapons</p>
+    <ul id="equip-weapons-ul">
+      <!-- <li><span>delete</span></li> -->
+    </ul>
+    <p id="grenades">Grenades</p>
+    <ul id="equip-grenades-ul">
+    </ul>
+    <p id="shields">Shields</p>
+    <ul id="equip-shields-ul">
+    </ul>
+    <p id="misc">Misc.</p>
+    <ul id="equip-misc-ul">
+    </ul>
   </div>
 
   <div class="inventory-con">
+    <label for="inv-item-input">
+      <select id="inv-item-type">
+        <option value="weapons">Weapon</option>
+        <option value="shields">Shield</option>
+        <option value="grenades">Grenade</option>
+        <option value="misc">Misc</option>
+      </select>
+    </label>
+    <input type="text" id="inv-item-input">
+    <button id="inv-add-item">Add item</button>
     <h2>Inventory</h2>
     <p class="inventory" id="weapons-inv">Weapons</p>
     <ul id="inv-weapons-ul">
+      <li>one</li>
+      <li>two</li>
+      <li>three</li>
     </ul>
     <p class="inventory" id="shields-inv">Shields</p>
     <ul id="inv-shields-ul">
@@ -76,17 +88,6 @@
     <p class="inventory" id="misc-inv">Misc.</p>
     <ul id="inv-misc-ul">
     </ul>
-    <label for="inv-item-input">
-      <select id="inv-item-type">
-        <option value="weapons">Weapon</option>
-        <option value="shields">Shield</option>
-        <option value="grenades">Grenade</option>
-        <option value="mods">Character Mod</option>
-        <option value="backpack">Backpack</option>
-      </select>
-    </label>
-    <input type="text" id="inv-item-input">
-    <button id="inv-add-item">Add item</button>
   </div>
 
 </body>
