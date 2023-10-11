@@ -71,39 +71,59 @@ function getElementByIdOrThrow<T extends HTMLElement>(
   return element as T;
 }
 
+function saveData(data: VaultData): void {
+}
+
 //*=========================================== MAIN ===========================================*/
 
 function main() {
-  const equipItem = getElementByIdOrThrow<HTMLButtonElement>("equip-item");
+  const hunterSelect = getElementByIdOrThrow<HTMLSelectElement>("char-select");
+  const valutBtns = [...document.querySelectorAll("vault")];
+
+  let selectedHunter = "";
+  
+  hunterSelect.addEventListener("change", () => {
+    console.log(hunterSelect.value);
+  })
+
   const equipItemInput = getElementByIdOrThrow<HTMLInputElement>(
     "equip-item-input",
   );
   const equipItemType = getElementByIdOrThrow<HTMLSelectElement>(
     "equip-item-type",
   );
-  const equipWeapon = getElementByIdOrThrow<HTMLParagraphElement>(
-    "equip-weapons-ul",
+  const equipItemBtn = getElementByIdOrThrow<HTMLButtonElement>("equip-item");
+  const invItemType = getElementByIdOrThrow<HTMLSelectElement>("inv-item-type");
+  const invItemInput = getElementByIdOrThrow<HTMLInputElement>(
+    "inv-item-input",
   );
+  const invAddBtn = getElementByIdOrThrow<HTMLButtonElement>("inv-add-item");
 
-  const itemToParagraphMap = {};
-
-  const addItemToUL = (
+  const addInputToUL = (
     input: HTMLInputElement,
     type: HTMLSelectElement,
   ): void => {
     let newLI = document.createElement("li");
+    let removeBtn = document.createElement("button");
+    removeBtn.className = "remove-btn";
+    removeBtn.textContent = "remove";
     let ul = (type.id === "equip-item-type")
       ? getElementByIdOrThrow<HTMLUListElement>(`equip-${type.value}-ul`)
       : getElementByIdOrThrow<HTMLUListElement>(`inv-${type.value}-ul`);
 
     newLI.textContent = input.value;
+    newLI.append(removeBtn);
     ul.append(newLI);
   };
 
-  equipItem.addEventListener("click", () => {
-    addItemToUL(equipItemInput, equipItemType);
+  equipItemBtn.addEventListener("click", () => {
+    addInputToUL(equipItemInput, equipItemType);
     // let x = orderedList.getElementsByTagName("li");
     // console.log(x[0].textContent);
+  });
+
+  invAddBtn.addEventListener("click", () => {
+    addInputToUL(invItemInput, invItemType);
   });
 }
 
