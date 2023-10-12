@@ -12,13 +12,14 @@
 
 <body>
   <div class="btn-con">
-    <button class="vault valut1" id="valut0">Valut 0</button>
-    <button class="vault valut1" id="valut1">Valut 1</button>
-    <button class="vault valut1" id="valut2">Valut 2</button>
-    <button class="vault valut1" id="valut3">Valut 3</button>
+    <button class="vault valut1" id="valut0">vault 0</button>
+    <button class="vault valut1" id="valut1">vault 1</button>
+    <button class="vault valut1" id="valut2">vault 2</button>
+    <button class="vault valut1" id="valut3">vault 3</button>
   </div>
 
-  <select id="char-select">
+  <select id="char-select" autocomplete="off">
+    <option selected="true" disabled="true" hidden="true">Select Vault Hunter</option>
     <option value="amara">Amara</option>
     <option value="athena">Athena</option>
   </select>
@@ -33,14 +34,15 @@
 
   <div class="equip-con">
     <label for="equip-item-input">
-      <select id="equip-item-type">
+      <select id="equip-item-type" autocomplete="off">
+        <!-- <option selected="true" disabled="true" hidden="true">Select Gear</option> -->
         <option value="weapons">Weapon</option>
         <option value="shields">Shield</option>
         <option value="grenades">Grenade</option>
         <option value="misc">Misc</option>
       </select>
     </label>
-    <input type="text" id="equip-item-input">
+    <input type="text" id="equip-item-input" placeholder="Input Gear">
     <button id="equip-item">Add item</button>
     <h2>Equipped Gear</h2>
     <p id="weapons">Weapons</p>
@@ -60,14 +62,15 @@
 
   <div class="inventory-con">
     <label for="inv-item-input">
-      <select id="inv-item-type">
+      <select id="inv-item-type" autocomplete="off">
+        <!-- <option selected="true" disabled="true" hidden="true" >Select Gear</option> -->
         <option value="weapons">Weapon</option>
         <option value="shields">Shield</option>
         <option value="grenades">Grenade</option>
         <option value="misc">Misc</option>
       </select>
     </label>
-    <input type="text" id="inv-item-input">
+    <input type="text" id="inv-item-input" placeholder="Input Gear">
     <button id="inv-add-item">Add item</button>
     <h2>Inventory</h2>
     <p class="inventory" id="weapons-inv">Weapons</p>

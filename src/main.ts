@@ -77,14 +77,26 @@ function saveData(data: VaultData): void {
 //*=========================================== MAIN ===========================================*/
 
 function main() {
+  const valutBtns = [...document.querySelectorAll(".vault")];
   const hunterSelect = getElementByIdOrThrow<HTMLSelectElement>("char-select");
-  const valutBtns = [...document.querySelectorAll("vault")];
+  const hunterSelectEl = getElementByIdOrThrow<HTMLSelectElement>(
+    "char-select",
+  );
+
+  let hunterOptions = [...hunterSelectEl.options].map((option) => {
+    if (option.value !== "Select Vault Hunter") {
+      return option.value;
+    }
+  }).filter((value) => value !== undefined);
+
+  console.log(valutBtns);
 
   let selectedHunter = "";
-  
+
   hunterSelect.addEventListener("change", () => {
-    console.log(hunterSelect.value);
-  })
+    selectedHunter = hunterSelect.value;
+    console.log(selectedHunter);
+  });
 
   const equipItemInput = getElementByIdOrThrow<HTMLInputElement>(
     "equip-item-input",
@@ -111,9 +123,17 @@ function main() {
       ? getElementByIdOrThrow<HTMLUListElement>(`equip-${type.value}-ul`)
       : getElementByIdOrThrow<HTMLUListElement>(`inv-${type.value}-ul`);
 
-    newLI.textContent = input.value;
-    newLI.append(removeBtn);
-    ul.append(newLI);
+    if (input.value !== "") {
+      newLI.textContent = input.value;
+      newLI.append(removeBtn);
+      ul.append(newLI);
+    }
+
+    input.value = "";
+
+    removeBtn.addEventListener("click", () => {
+      newLI.remove();
+    });
   };
 
   equipItemBtn.addEventListener("click", () => {
