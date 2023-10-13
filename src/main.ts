@@ -10,12 +10,15 @@ type JsonValue =
   | Array<JsonValue>
   | { [key: string]: JsonValue | undefined };
 
-type ItemType =
-  | "weapon"
-  | "grenade"
-  | "shield"
-  | "mod"
-  | "misc";
+const itemType = [
+  "weapons",
+  "grenades",
+  "shields",
+  "mods",
+  "misc",
+] as const;
+
+type ItemType = typeof itemType[number];
 
 type Item = {
   type: ItemType;
@@ -49,18 +52,18 @@ type State = {
 // let sample: State = {
 //   level: 0,
 //   scenario: 0,
-//   vaults: [
-//     {
-//       name: amara,
-//       equippedItems: [
-//         { type: "weapon", name: "gun" },
-//       ],
-//       inventory: [
-//         { type: "weapon", name: "gun" },
-//       ],
-//     },
-//   ],
+//   vaults: [{
+//     name: "amara",
+//     equippedItems: [{ type: "weapons", name: "gun" }],
+//     inventory: [{ type: "weapons", name: "gun" }],
+//   }],
 // };
+
+// let vaultState: State;
+
+function assert(expr: unknown, msg?: string): asserts expr {
+  if (!expr) throw new Error(msg);
+}
 
 function getElementByIdOrThrow<T extends HTMLElement>(
   selector: string,
@@ -71,31 +74,89 @@ function getElementByIdOrThrow<T extends HTMLElement>(
   return element as T;
 }
 
-function saveData(data: VaultData): void {
-}
-
 //*=========================================== MAIN ===========================================*/
 
 function main() {
+  function saveState(): void {
+    localStorage.setItem("vaultState", JSON.stringify(vaultState));
+  }
+
+  function loadState(): State {
+    return vaultState;
+  }
+
+  let vaultState: State = {
+    level: 0,
+    scenario: 0,
+    vaults: [{
+      name: "amara",
+      equippedItems: [],
+      inventory: [],
+    }],
+  };
+
   const valutBtns = [...document.querySelectorAll(".vault")];
   const hunterSelect = getElementByIdOrThrow<HTMLSelectElement>("char-select");
   const hunterSelectEl = getElementByIdOrThrow<HTMLSelectElement>(
     "char-select",
   );
 
-  let hunterOptions = [...hunterSelectEl.options].map((option) => {
-    if (option.value !== "Select Vault Hunter") {
-      return option.value;
+  undefined;
+
+  function saveItems(
+    hunterIndex: number,
+    inputElement: HTMLInputElement,
+    typeElement: HTMLSelectElement,
+  ): void {
+    const type = typeElement.value;
+    const name = inputElement.value;
+
+    // (array.includes)(type)
+    // (itemType.includes as (x: unknown) => x is ItemType)(type)
+
+    // (itemType.includes as (x: unknown) => x is ItemType)(type)
+    //                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+    // itemType.includes(type)
+
+    // TS -> if ((itemType.includes as (x: unknown) => x is ItemType)(type))
+    // JS -> if (itemType.includes(type))
+
+    // const isItemType = (x: unknown): x is ItemType => itemType.includes(x as ItemType);
+    // const isItemType = itemType.includes.bind(itemType) as (x: unknown) => x is ItemType;
+
+    // if (isItemType(type)) {
+    if ((itemType.includes as (x: unknown) => x is ItemType)(type)) {
+      vaultState.vaults[hunterIndex].equippedItems.push({ type, name });
+    } else {
+      throw new Error(
+        `Expect type 'ItemType'. '${type}' is not type 'ItemType'`,
+      );
     }
-  }).filter((value) => value !== undefined);
+  }
 
-  console.log(valutBtns);
+  let hunterOptions = [...hunterSelectEl.options]
+    .filter((option) => option.value !== "Select Vault Hunter")
+    .map((option) => option.value);
+  // .filter((value) => value !== undefined);
 
-  let selectedHunter = "";
+  // let hunterOptions = [
+  //   // ...document.querySelectorAll<HTMLOptionElement>("option[value]"),
+  //   // https://developer.mozilla.org/en-US/docs/Web/CSS/:scope
+  //   ...hunterSelectEl.querySelectorAll<HTMLOptionElement>(":scope > option[value]"),
+  // ].map((option) => option.value);
+
+  // let hunterOptions = [...hunterSelectEl.options].filter((option) =>
+  //   option.hasAttribute("value")
+  // ).map((option) => option.value);
+
+  console.log(hunterOptions);
+
+  let selectedHunterIndex: number = 0;
 
   hunterSelect.addEventListener("change", () => {
-    selectedHunter = hunterSelect.value;
-    console.log(selectedHunter);
+    selectedHunterIndex = hunterSelect.selectedIndex - 1;
+    console.log(selectedHunterIndex);
   });
 
   const equipItemInput = getElementByIdOrThrow<HTMLInputElement>(
@@ -119,6 +180,7 @@ function main() {
     let removeBtn = document.createElement("button");
     removeBtn.className = "remove-btn";
     removeBtn.textContent = "remove";
+    // console.log(type.value);
     let ul = (type.id === "equip-item-type")
       ? getElementByIdOrThrow<HTMLUListElement>(`equip-${type.value}-ul`)
       : getElementByIdOrThrow<HTMLUListElement>(`inv-${type.value}-ul`);
@@ -127,6 +189,8 @@ function main() {
       newLI.textContent = input.value;
       newLI.append(removeBtn);
       ul.append(newLI);
+
+      saveItems(selectedHunterIndex, input, type);
     }
 
     input.value = "";
@@ -138,6 +202,7 @@ function main() {
 
   equipItemBtn.addEventListener("click", () => {
     addInputToUL(equipItemInput, equipItemType);
+    console.log(vaultState);
     // let x = orderedList.getElementsByTagName("li");
     // console.log(x[0].textContent);
   });
