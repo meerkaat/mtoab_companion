@@ -61,6 +61,16 @@ type State = {
 
 // let vaultState: State;
 
+let vaultState: State = {
+  level: 0,
+  scenario: 0,
+  vaults: [{
+    name: "amara",
+    equippedItems: [],
+    inventory: [],
+  }],
+};
+
 function assert(expr: unknown, msg?: string): asserts expr {
   if (!expr) throw new Error(msg);
 }
@@ -74,66 +84,58 @@ function getElementByIdOrThrow<T extends HTMLElement>(
   return element as T;
 }
 
+function saveState(): void {
+  localStorage.setItem("vaultState", JSON.stringify(vaultState));
+}
+
+function loadState(): State {
+  return vaultState;
+}
+
+function saveItems(
+  hunterIndex: number,
+  inputElement: HTMLInputElement,
+  typeElement: HTMLSelectElement,
+): void {
+  const type = typeElement.value;
+  const name = inputElement.value;
+
+  // (array.includes)(type)
+  // (itemType.includes as (x: unknown) => x is ItemType)(type)
+
+  // (itemType.includes as (x: unknown) => x is ItemType)(type)
+  //                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
+
+  // itemType.includes(type)
+
+  // TS -> if ((itemType.includes as (x: unknown) => x is ItemType)(type))
+  // JS -> if (itemType.includes(type))
+
+  // const isItemType = (x: unknown): x is ItemType => itemType.includes(x as ItemType);
+  // const isItemType = itemType.includes.bind(itemType) as (x: unknown) => x is ItemType;
+
+  // if (isItemType(type)) {
+  if ((itemType.includes as (x: unknown) => x is ItemType)(type)) {
+    // if (name === )
+    vaultState.vaults[hunterIndex].equippedItems.push({ type, name });
+  } else {
+    throw new Error(
+      `Expect type 'ItemType'. '${type}' is not type 'ItemType'`,
+    );
+  }
+}
+
+function removeItemsFromStorage(hunterIndex: number, item: string): void {
+}
+
 //*=========================================== MAIN ===========================================*/
 
 function main() {
-  function saveState(): void {
-    localStorage.setItem("vaultState", JSON.stringify(vaultState));
-  }
-
-  function loadState(): State {
-    return vaultState;
-  }
-
-  let vaultState: State = {
-    level: 0,
-    scenario: 0,
-    vaults: [{
-      name: "amara",
-      equippedItems: [],
-      inventory: [],
-    }],
-  };
-
   const valutBtns = [...document.querySelectorAll(".vault")];
   const hunterSelect = getElementByIdOrThrow<HTMLSelectElement>("char-select");
   const hunterSelectEl = getElementByIdOrThrow<HTMLSelectElement>(
     "char-select",
   );
-
-  undefined;
-
-  function saveItems(
-    hunterIndex: number,
-    inputElement: HTMLInputElement,
-    typeElement: HTMLSelectElement,
-  ): void {
-    const type = typeElement.value;
-    const name = inputElement.value;
-
-    // (array.includes)(type)
-    // (itemType.includes as (x: unknown) => x is ItemType)(type)
-
-    // (itemType.includes as (x: unknown) => x is ItemType)(type)
-    //                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-    // itemType.includes(type)
-
-    // TS -> if ((itemType.includes as (x: unknown) => x is ItemType)(type))
-    // JS -> if (itemType.includes(type))
-
-    // const isItemType = (x: unknown): x is ItemType => itemType.includes(x as ItemType);
-    // const isItemType = itemType.includes.bind(itemType) as (x: unknown) => x is ItemType;
-
-    // if (isItemType(type)) {
-    if ((itemType.includes as (x: unknown) => x is ItemType)(type)) {
-      vaultState.vaults[hunterIndex].equippedItems.push({ type, name });
-    } else {
-      throw new Error(
-        `Expect type 'ItemType'. '${type}' is not type 'ItemType'`,
-      );
-    }
-  }
 
   let hunterOptions = [...hunterSelectEl.options]
     .filter((option) => option.value !== "Select Vault Hunter")
@@ -166,49 +168,54 @@ function main() {
     "equip-item-type",
   );
   const equipItemBtn = getElementByIdOrThrow<HTMLButtonElement>("equip-item");
-  const invItemType = getElementByIdOrThrow<HTMLSelectElement>("inv-item-type");
-  const invItemInput = getElementByIdOrThrow<HTMLInputElement>(
-    "inv-item-input",
-  );
   const invAddBtn = getElementByIdOrThrow<HTMLButtonElement>("inv-add-item");
 
   const addInputToUL = (
-    input: HTMLInputElement,
-    type: HTMLSelectElement,
+    typeElm: HTMLSelectElement,
+    inputElm: HTMLInputElement,
+    btnElm: HTMLButtonElement,
   ): void => {
     let newLI = document.createElement("li");
     let removeBtn = document.createElement("button");
     removeBtn.className = "remove-btn";
     removeBtn.textContent = "remove";
     // console.log(type.value);
-    let ul = (type.id === "equip-item-type")
-      ? getElementByIdOrThrow<HTMLUListElement>(`equip-${type.value}-ul`)
-      : getElementByIdOrThrow<HTMLUListElement>(`inv-${type.value}-ul`);
+    let ul = (btnElm.id === "equip-item")
+      ? getElementByIdOrThrow<HTMLUListElement>(`equip-${typeElm.value}-ul`)
+      : getElementByIdOrThrow<HTMLUListElement>(`inv-${typeElm.value}-ul`);
 
-    if (input.value !== "") {
-      newLI.textContent = input.value;
+    if (inputElm.value !== "") {
+      newLI.textContent = inputElm.value;
       newLI.append(removeBtn);
       ul.append(newLI);
+      console.log(newLI.value);
 
-      saveItems(selectedHunterIndex, input, type);
+      saveItems(selectedHunterIndex, inputElm, typeElm);
     }
 
-    input.value = "";
-
+    inputElm.value = "";
+    
     removeBtn.addEventListener("click", () => {
       newLI.remove();
+      // let itemsToRemove = ul.querySelectorAll("li")
+      // let index = vaultState.vaults[selectedHunterIndex].equippedItems.indexOf({
+      //   type: newLI.value,
+      //   name: itemsToRemove,
+      // });
+      // vaultState.vaults[selectedHunterIndex].equippedItems.splice(index, 1);
     });
   };
 
   equipItemBtn.addEventListener("click", () => {
-    addInputToUL(equipItemInput, equipItemType);
-    console.log(vaultState);
+    addInputToUL(equipItemType, equipItemInput, equipItemBtn);
+    console.log("Equipped items array", vaultState.vaults[selectedHunterIndex].equippedItems);
     // let x = orderedList.getElementsByTagName("li");
     // console.log(x[0].textContent);
   });
-
+  
   invAddBtn.addEventListener("click", () => {
-    addInputToUL(invItemInput, invItemType);
+    addInputToUL(equipItemType, equipItemInput, invAddBtn);
+    
   });
 }
 
