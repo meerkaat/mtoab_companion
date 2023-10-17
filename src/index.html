@@ -34,13 +34,13 @@
   <button id="increase-scenario">+</button>
 
 
-  <div class="equip-con">
+  <div id="equip-con">
     <label for="equip-item-input">
       <select id="equip-item-type" autocomplete="off">
         <!-- <option selected="true" disabled="true" hidden="true">Select Gear</option> -->
         <option value="weapons">Weapon</option>
-        <option value="shields">Shield</option>
         <option value="grenades">Grenade</option>
+        <option value="shields">Shield</option>
         <option value="misc">Misc</option>
       </select>
     </label>
@@ -50,7 +50,6 @@
     <h2>Equipped Gear</h2>
     <p id="weapons">Weapons</p>
     <ul id="equip-weapons-ul">
-      <!-- <li><span>delete</span></li> -->
     </ul>
     <p id="grenades">Grenades</p>
     <ul id="equip-grenades-ul">
@@ -63,7 +62,7 @@
     </ul>
   </div>
 
-  <div class="inventory-con">
+  <div id="inventory-con">
     <!-- <label for="inv-item-input">
       <select id="inv-item-type" autocomplete="off"> -->
         <!-- <option selected="true" disabled="true" hidden="true" >Select Gear</option> -->
@@ -79,11 +78,11 @@
     <p class="inventory" id="weapons-inv">Weapons</p>
     <ul id="inv-weapons-ul">
     </ul>
-    <p class="inventory" id="shields-inv">Shields</p>
-    <ul id="inv-shields-ul">
-    </ul>
     <p class="inventory" id="grenades-inv">Grenades</p>
     <ul id="inv-grenades-ul">
+    </ul>
+    <p class="inventory" id="shields-inv">Shields</p>
+    <ul id="inv-shields-ul">
     </ul>
     <!-- <p class="inventory" id="char-mods-inv">Character Mods</p>
     <ul id="inv-mods-ul">
