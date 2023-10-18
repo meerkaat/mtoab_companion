@@ -183,6 +183,9 @@ function main() {
   const equipItemBtn = getElementByIdOrThrow<HTMLButtonElement>("equip-item");
   const invAddBtn = getElementByIdOrThrow<HTMLButtonElement>("inv-add-item");
 
+  const isItemType = (x: unknown): x is ItemType =>
+    itemType.includes(x as ItemType);
+
   const addInputToUL = (
     typeElm: HTMLSelectElement,
     inputElm: HTMLInputElement,
@@ -216,9 +219,6 @@ function main() {
       saveToEquipOrInv = vaultStateInv;
     }
 
-    const isItemType = (x: unknown): x is ItemType =>
-      itemType.includes(x as ItemType);
-
     if (isItemType(typeElm.value)) {
       if (inputElm.value !== "") {
         newLI.textContent = inputElm.value;
@@ -234,50 +234,51 @@ function main() {
 
     inputElm.value = "";
 
-    // this removes the wrong items if items not removed from last added to first added. 
-    removeBtn.addEventListener("click", () => {
-      const equipContainer = getElementByIdOrThrow<HTMLDivElement>("equip-con");
-      const ivnContainer = getElementByIdOrThrow<HTMLDivElement>(
-        "inventory-con",
-      );
-      let itemToDelete = removeBtn.parentElement?.firstChild?.textContent;
-      let containingDiv = removeBtn.parentElement?.parentElement?.parentElement;
-      let type = removeBtn.parentElement?.parentElement?.dataset.type;
-      let location;
-      console.log("item to remove", itemToDelete, "parent", containingDiv);
+    // this removes the wrong items if items not removed from last added to first added.
+    removeBtn.addEventListener("click", (e) => {
+      if (e.target instanceof HTMLButtonElement) {
+        const equipContainer = getElementByIdOrThrow<HTMLDivElement>(
+          "equip-con",
+        );
+        const ivnContainer = getElementByIdOrThrow<HTMLDivElement>(
+          "inventory-con",
+        );
+        // let itemToDelete = removeBtn.parentElement?.firstChild?.textContent;
+        // let containingDiv = removeBtn.parentElement?.parentElement
+        //   ?.parentElement;
+        // let type = removeBtn.parentElement?.parentElement?.dataset.type;
+        let itemToDelete = e.target.parentElement?.firstChild?.textContent;
+        let containingDiv = e.target.parentElement?.parentElement
+          ?.parentElement;
+        let type = e.target.parentElement?.parentElement?.dataset.type;
+        let location;
+        console.log("item to remove", itemToDelete, "parent", containingDiv);
 
-      if (containingDiv?.id === equipContainer.id) location = vaultStateEquip;
-      if (containingDiv?.id === ivnContainer.id) location = vaultStateInv;
+        if (containingDiv?.id === equipContainer.id) location = vaultStateEquip;
+        if (containingDiv?.id === ivnContainer.id) location = vaultStateInv;
 
-      if (location === undefined) throw new Error("'location' is undefined");
-      if (type === undefined) throw new Error("'data-type' does not exist");
-      if ((itemToDelete === undefined) || (itemToDelete === null)) {
-        throw new Error("'itemToDelete' is undefined");
-      }
+        if (location === undefined) throw new Error("'location' is undefined");
+        if (type === undefined) throw new Error("'data-type' does not exist");
+        if ((itemToDelete === undefined) || (itemToDelete === null)) {
+          throw new Error("'itemToDelete' is undefined");
+        }
 
-      if (isItemType(type)) {
-        let index = location.indexOf({
-          type: type,
-          name: itemToDelete,
-        });
-        location.splice(index, 1);
-      }
+        if (isItemType(type)) {
+          let index = location.indexOf({
+            type: type,
+            name: itemToDelete,
+          });
+          location.splice(index, 1);
+        }
 
-      newLI.remove();
-
-      console.log(
-        "after delete",
-        "\n",
-        "equip:",
-        vaultStateEquip,
-        "inv:",
-        vaultStateInv,
-      );
+        newLI.remove();
+      } else throw new Error("taget doesn't exist");
     });
   };
 
   equipItemBtn.addEventListener("click", () => {
     addInputToUL(equipItemType, equipItemInput, equipItemBtn);
+
     // console.log(
     //   "Equipped items array",
     //   vaultState.vaults[selectedHunterIndex].equippedItems,
@@ -290,5 +291,4 @@ function main() {
     addInputToUL(equipItemType, equipItemInput, invAddBtn);
   });
 }
-
 main();
