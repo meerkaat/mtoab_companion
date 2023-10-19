@@ -199,7 +199,7 @@ function main() {
       "inv",
       vaultStateInv,
     );
-    console.log(typeElm.parentElement);
+    // console.log(typeElm.parentElement);
 
     let newLI = document.createElement("li");
     let removeBtn = document.createElement("button");
@@ -246,7 +246,7 @@ function main() {
         // let itemToDelete = removeBtn.parentElement?.firstChild?.textContent;
         // let containingDiv = removeBtn.parentElement?.parentElement
         //   ?.parentElement;
-        // let type = removeBtn.parentElement?.parentElement?.dataset.type;
+        // let type = removeBtn.parentcd Element?.parentElement?.dataset.type;
         let itemToDelete = e.target.parentElement?.firstChild?.textContent;
         let containingDiv = e.target.parentElement?.parentElement
           ?.parentElement;
@@ -264,15 +264,23 @@ function main() {
         }
 
         if (isItemType(type)) {
-          let index = location.indexOf({
-            type: type,
-            name: itemToDelete,
-          });
-          location.splice(index, 1);
-        }
+          // let index = location.indexOf();
+          let index = location.findIndex((i) => i.name === itemToDelete);
+          if (index !== -1) location.splice(index, 1);
+          // console.log(test);
 
-        newLI.remove();
-      } else throw new Error("taget doesn't exist");
+          newLI.remove();
+
+          console.log(
+            "after removing",
+            "\n",
+            "equip",
+            vaultStateEquip,
+            "inv",
+            vaultStateInv,
+          );
+        } else throw new Error("taget doesn't exist");
+      }
     });
   };
 
