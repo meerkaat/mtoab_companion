@@ -1,5 +1,6 @@
 // I have no idea how the Borderlands inventory works
 // so I'm not sure what these data structures should look like…
+// 🔥🔥🔥🔥🔥🔥🚿🚒 *Me dealing with the heat*
 
 /** Any valid JSON value */
 type JsonValue =
@@ -25,41 +26,17 @@ type Item = {
   name: string;
 };
 
-// let sampleItem: Item = {type: "weapon", name: "gun",}
-
 type VaultData = {
   name: string;
   equippedItems: Item[];
   inventory: Item[];
 };
 
-// let sampletVD: VaultData = {
-//   name: amara,
-//   equippedItems: [
-//     { type: "weapon", name: "gun" },
-//   ],
-//   inventory: [
-//     { type: "weapon", name: "gun" },
-//   ],
-// };
-
 type State = {
   level: number;
   scenario: number;
   vaults: VaultData[];
 };
-
-// let sample: State = {
-//   level: 0,
-//   scenario: 0,
-//   vaults: [{
-//     name: "amara",
-//     equippedItems: [{ type: "weapons", name: "gun" }],
-//     inventory: [{ type: "weapons", name: "gun" }],
-//   }],
-// };
-
-// let vaultState: State;
 
 let vaultState: State = {
   level: 0,
@@ -92,44 +69,6 @@ function loadState(): State {
   return vaultState;
 }
 
-function saveItems(
-  hunterIndex: number,
-  inputElement: HTMLInputElement,
-  typeElement: HTMLSelectElement,
-): void {
-  const type = typeElement.value;
-  const name = inputElement.value;
-  let typeParent = typeElement.parentElement;
-
-  // (array.includes)(type)
-  // (itemType.includes as (x: unknown) => x is ItemType)(type)
-
-  // (itemType.includes as (x: unknown) => x is ItemType)(type)
-  //                    ^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^^
-
-  // itemType.includes(type)
-
-  // TS -> if ((itemType.includes as (x: unknown) => x is ItemType)(type))
-  // JS -> if (itemType.includes(type))
-
-  const isItemType = (x: unknown): x is ItemType =>
-    itemType.includes(x as ItemType);
-  // const isItemType = itemType.includes.bind(itemType) as (x: unknown) => x is ItemType;
-
-  // if (isItemType(type)) {
-  if ((itemType.includes as (x: unknown) => x is ItemType)(type)) {
-    // if (type === )
-    vaultState.vaults[hunterIndex].equippedItems.push({ type, name });
-  } else {
-    throw new Error(
-      `Expect type 'ItemType'. '${type}' is not type 'ItemType'`,
-    );
-  }
-}
-
-function removeItemsFromStorage(hunterIndex: number, item: string): void {
-}
-
 //*=========================================== MAIN ===========================================*/
 
 function main() {
@@ -160,26 +99,13 @@ function main() {
   let vaultStateEquip = vaultState.vaults[selectedHunterIndex].equippedItems;
   let vaultStateInv = vaultState.vaults[selectedHunterIndex].inventory;
 
-  console.log(
-    "initial state",
-    "\n",
-    "equip",
-    vaultStateEquip,
-    "inv",
-    vaultStateInv,
-  );
-
   hunterSelect.addEventListener("change", () => {
     selectedHunterIndex = hunterSelect.selectedIndex - 1;
     // console.log(selectedHunterIndex);
   });
 
-  const equipItemInput = getElementByIdOrThrow<HTMLInputElement>(
-    "equip-item-input",
-  );
-  const equipItemType = getElementByIdOrThrow<HTMLSelectElement>(
-    "equip-item-type",
-  );
+  const input = getElementByIdOrThrow<HTMLInputElement>("equip-item-input");
+  const inputType = getElementByIdOrThrow<HTMLSelectElement>("equip-item-type");
   const equipItemBtn = getElementByIdOrThrow<HTMLButtonElement>("equip-item");
   const invAddBtn = getElementByIdOrThrow<HTMLButtonElement>("inv-add-item");
 
@@ -199,13 +125,12 @@ function main() {
       "inv",
       vaultStateInv,
     );
-    // console.log(typeElm.parentElement);
 
     let newLI = document.createElement("li");
     let removeBtn = document.createElement("button");
     removeBtn.className = "remove-btn";
     removeBtn.textContent = "remove";
-    // console.log(type.value);
+
     let ul;
     let saveToEquipOrInv;
 
@@ -228,34 +153,29 @@ function main() {
           type: typeElm.value,
           name: inputElm.value,
         });
-        // saveItems(selectedHunterIndex, inputElm, typeElm);
+
+        saveState();
       }
     }
 
     inputElm.value = "";
 
-    // this removes the wrong items if items not removed from last added to first added.
     removeBtn.addEventListener("click", (e) => {
       if (e.target instanceof HTMLButtonElement) {
         const equipContainer = getElementByIdOrThrow<HTMLDivElement>(
           "equip-con",
         );
-        const ivnContainer = getElementByIdOrThrow<HTMLDivElement>(
-          "inventory-con",
-        );
-        // let itemToDelete = removeBtn.parentElement?.firstChild?.textContent;
-        // let containingDiv = removeBtn.parentElement?.parentElement
-        //   ?.parentElement;
-        // let type = removeBtn.parentcd Element?.parentElement?.dataset.type;
+
         let itemToDelete = e.target.parentElement?.firstChild?.textContent;
         let containingDiv = e.target.parentElement?.parentElement
           ?.parentElement;
         let type = e.target.parentElement?.parentElement?.dataset.type;
-        let location;
-        console.log("item to remove", itemToDelete, "parent", containingDiv);
 
-        if (containingDiv?.id === equipContainer.id) location = vaultStateEquip;
-        if (containingDiv?.id === ivnContainer.id) location = vaultStateInv;
+        // if (containingDiv?.id === equipContainer.id) location = vaultStateEquip;
+        // if (containingDiv?.id === ivnContainer.id) location = vaultStateInv;
+        let location = (containingDiv?.id === equipContainer.id)
+          ? vaultStateEquip
+          : vaultStateInv;
 
         if (location === undefined) throw new Error("'location' is undefined");
         if (type === undefined) throw new Error("'data-type' does not exist");
@@ -266,37 +186,23 @@ function main() {
         if (isItemType(type)) {
           // let index = location.indexOf();
           let index = location.findIndex((i) => i.name === itemToDelete);
+
           if (index !== -1) location.splice(index, 1);
-          // console.log(test);
+
+          saveState();
 
           newLI.remove();
-
-          console.log(
-            "after removing",
-            "\n",
-            "equip",
-            vaultStateEquip,
-            "inv",
-            vaultStateInv,
-          );
         } else throw new Error("taget doesn't exist");
       }
     });
   };
 
   equipItemBtn.addEventListener("click", () => {
-    addInputToUL(equipItemType, equipItemInput, equipItemBtn);
-
-    // console.log(
-    //   "Equipped items array",
-    //   vaultState.vaults[selectedHunterIndex].equippedItems,
-    // );
-    // let x = orderedList.getElementsByTagName("li");
-    // console.log(x[0].textContent);
+    addInputToUL(inputType, input, equipItemBtn);
   });
 
   invAddBtn.addEventListener("click", () => {
-    addInputToUL(equipItemType, equipItemInput, invAddBtn);
+    addInputToUL(inputType, input, invAddBtn);
   });
 }
 main();
