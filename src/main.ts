@@ -27,7 +27,7 @@ type Item = {
 };
 
 type VaultData = {
-  name: string;
+  name?: string;
   equippedItems: Item[];
   inventory: Item[];
 };
@@ -41,11 +41,28 @@ type State = {
 let vaultState: State = {
   level: 0,
   scenario: 0,
-  vaults: [{
-    name: "amara",
-    equippedItems: [],
-    inventory: [],
-  }],
+  vaults: [
+    {
+      name: "",
+      equippedItems: [],
+      inventory: [],
+    },
+    // {
+    //   name: "athena",
+    //   equippedItems: [],
+    //   inventory: [],
+    // },
+    // {
+    //   name: "aurelia",
+    //   equippedItems: [],
+    //   inventory: [],
+    // },
+    // {
+    //   name: "axton",
+    //   equippedItems: [],
+    //   inventory: [],
+    // },
+  ],
 };
 
 function assert(expr: unknown, msg?: string): asserts expr {
@@ -72,7 +89,7 @@ function loadState(): State {
 //*=========================================== MAIN ===========================================*/
 
 function main() {
-  const valutBtns = [...document.querySelectorAll(".vault")];
+  const vaultBtns = [...document.querySelectorAll(".vault")];
   const hunterSelect = getElementByIdOrThrow<HTMLSelectElement>("char-select");
   const hunterSelectEl = getElementByIdOrThrow<HTMLSelectElement>(
     "char-select",
@@ -95,19 +112,41 @@ function main() {
 
   // console.log(hunterOptions);
 
-  let selectedHunterIndex: number = 0;
-  let vaultStateEquip = vaultState.vaults[selectedHunterIndex].equippedItems;
-  let vaultStateInv = vaultState.vaults[selectedHunterIndex].inventory;
+  let hunterIndex: number = 0;
+  let vaultStateEquip = vaultState.vaults[hunterIndex].equippedItems;
+  let vaultStateInv = vaultState.vaults[hunterIndex].inventory;
 
+  /* 
+  order of operations: 
+    - click vault button
+    - select hunter from select options
+    - disable selected hunter from select options
+    - change button text to hunter name
+    - add hunter to vault data
+  currently it is the oposite of this:(
+  */
   hunterSelect.addEventListener("change", () => {
-    selectedHunterIndex = hunterSelect.selectedIndex - 1;
-    // console.log(selectedHunterIndex);
+    hunterIndex = hunterSelect.selectedIndex - 1;
+    vaultState.vaults[hunterIndex] = {...vaultState.vaults[hunterIndex], name: hunterSelect.value};
+    saveState();
   });
+
+  for (let i = 0; i < vaultBtns.length; i++) {
+    const selectedBtn = getElementByIdOrThrow<HTMLButtonElement>(`vault${i}`);
+    selectedBtn.addEventListener("click", () => {
+      let selectedHunter = vaultState.vaults[i];
+      selectedBtn.textContent = selectedHunter.name;
+      console.log(hunterIndex);
+    });
+  }
 
   const input = getElementByIdOrThrow<HTMLInputElement>("equip-item-input");
   const inputType = getElementByIdOrThrow<HTMLSelectElement>("equip-item-type");
   const equipItemBtn = getElementByIdOrThrow<HTMLButtonElement>("equip-item");
   const invAddBtn = getElementByIdOrThrow<HTMLButtonElement>("inv-add-item");
+  const clearStore = getElementByIdOrThrow<HTMLButtonElement>("clear-storage");
+
+  clearStore.addEventListener("click", () => localStorage.clear());
 
   const isItemType = (x: unknown): x is ItemType =>
     itemType.includes(x as ItemType);
@@ -185,7 +224,9 @@ function main() {
 
         if (isItemType(type)) {
           // let index = location.indexOf();
-          let index = location.findIndex((i) => i.name === itemToDelete);
+          let index = location.findIndex((i) =>
+            i.type === type && i.name === itemToDelete
+          );
 
           if (index !== -1) location.splice(index, 1);
 
