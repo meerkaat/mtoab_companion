@@ -116,8 +116,8 @@ function main() {
   let vaultStateEquip = vaultState.vaults[hunterIndex].equippedItems;
   let vaultStateInv = vaultState.vaults[hunterIndex].inventory;
 
-  /* 
-  order of operations: 
+  /*
+  order of operations:
     - click vault button
     - select hunter from select options
     - disable selected hunter from select options
@@ -126,19 +126,44 @@ function main() {
   currently it is the oposite of this:(
   */
   hunterSelect.addEventListener("change", () => {
-    hunterIndex = hunterSelect.selectedIndex - 1;
-    vaultState.vaults[hunterIndex] = {...vaultState.vaults[hunterIndex], name: hunterSelect.value};
+    // hunterIndex = hunterSelect.selectedIndex - 1;
+    // vaultState.vaults[hunterIndex] = {...vaultState.vaults[hunterIndex], name: hunterSelect.value};
+    vaultBtns.forEach((btn, index) => {
+      btn.addEventListener("click", () => {
+        if (
+          (vaultBtns.includes as (x: unknown) => x is HTMLButtonElement)(btn)
+        ) {
+          btn.dataset.index = "false";
+          if (btn.value === "false") {
+            btn.dataset.index = index.toString();
+            vaultState.vaults[index] = {
+              ...vaultState.vaults[index],
+              name: hunterSelect.value,
+            };
+            btn.textContent = hunterSelect.value;
+            console.log(btn.dataset);
+            btn.value = "true";
+          }
+        }
+        console.log(vaultState.vaults);
+      });
+    });
     saveState();
   });
 
-  for (let i = 0; i < vaultBtns.length; i++) {
-    const selectedBtn = getElementByIdOrThrow<HTMLButtonElement>(`vault${i}`);
-    selectedBtn.addEventListener("click", () => {
-      let selectedHunter = vaultState.vaults[i];
-      selectedBtn.textContent = selectedHunter.name;
-      console.log(hunterIndex);
-    });
-  }
+  // for (let i = 0; i < vaultBtns.length; i++) {
+  //   const selectedBtn = getElementByIdOrThrow<HTMLButtonElement>(`vault${i}`);
+  //   selectedBtn.addEventListener("click", () => {
+  //     vaultState.vaults.splice(i, 0, {
+  //       ...vaultState.vaults[hunterIndex],
+  //       name: hunterSelect.value,
+  //     });
+  //     console.log(vaultState.vaults);
+  //     // let selectedHunter = vaultState.vaults[i];
+  //     // selectedBtn.textContent = selectedHunter.name;
+  //     // console.log(hunterIndex);
+  //   });
+  // }
 
   const input = getElementByIdOrThrow<HTMLInputElement>("equip-item-input");
   const inputType = getElementByIdOrThrow<HTMLSelectElement>("equip-item-type");
