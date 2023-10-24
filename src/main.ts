@@ -89,7 +89,11 @@ function loadState(): State {
 //*=========================================== MAIN ===========================================*/
 
 function main() {
-  const vaultBtns = [...document.querySelectorAll(".vault")];
+  const consoleBtn = getElementByIdOrThrow<HTMLButtonElement>("console");
+  consoleBtn.addEventListener("click", () => {
+    console.log("vaultState.vaults", vaultState.vaults);
+  });
+  let vaultBtns = [...document.querySelectorAll(".vault")];
   const hunterSelect = getElementByIdOrThrow<HTMLSelectElement>("char-select");
   const hunterSelectEl = getElementByIdOrThrow<HTMLSelectElement>(
     "char-select",
@@ -125,31 +129,69 @@ function main() {
     - add hunter to vault data
   currently it is the oposite of this:(
   */
-  hunterSelect.addEventListener("change", () => {
-    // hunterIndex = hunterSelect.selectedIndex - 1;
-    // vaultState.vaults[hunterIndex] = {...vaultState.vaults[hunterIndex], name: hunterSelect.value};
-    vaultBtns.forEach((btn, index) => {
-      btn.addEventListener("click", () => {
-        if (
-          (vaultBtns.includes as (x: unknown) => x is HTMLButtonElement)(btn)
-        ) {
-          btn.dataset.index = "false";
-          if (btn.value === "false") {
-            btn.dataset.index = index.toString();
-            vaultState.vaults[index] = {
-              ...vaultState.vaults[index],
-              name: hunterSelect.value,
-            };
-            btn.textContent = hunterSelect.value;
-            console.log(btn.dataset);
-            btn.value = "true";
+  // hunterSelect.addEventListener("change", () => {
+  //   // hunterIndex = hunterSelect.selectedIndex - 1;
+  //   // vaultState.vaults[hunterIndex] = {...vaultState.vaults[hunterIndex], name: hunterSelect.value};
+  //   vaultBtns.forEach((btn, index) => {
+  //     btn.addEventListener("click", () => {
+  //       if (
+  //         (vaultBtns.includes as (x: unknown) => x is HTMLButtonElement)(btn)
+  //       ) {
+  //         btn.dataset.index = "false";
+  //         if (btn.value === "false") {
+  //           btn.dataset.index = index.toString();
+  //           vaultState.vaults[index] = {
+  //             ...vaultState.vaults[index],
+  //             name: hunterSelect.value,
+  //           };
+  //           btn.textContent = hunterSelect.value;
+  //           btn.value = "true";
+  //         }
+  //       }
+  //     });
+  //   });
+  //   saveState();
+  // });
+  const isButtonElm = (x: unknown): x is HTMLButtonElement =>
+    vaultBtns.includes(x as HTMLButtonElement);
+
+  vaultBtns.forEach((btn) => {
+    btn.addEventListener("click", function () {
+      if (!isButtonElm(btn)) {
+        throw new Error("Element not type 'HTMLButtonElement'");
+      }
+
+      if (btn.value) {
+        btn.classList.add("selected");
+        vaultBtns.map((item) => {
+          if (!isButtonElm(item)) {
+            throw new Error("Element not type 'HTMLButtonElement'");
           }
-        }
-        console.log(vaultState.vaults);
-      });
+
+          if (item !== btn) {
+            item.value = "false";
+            item.classList.remove("selected");
+          }
+        });
+      }
     });
-    saveState();
   });
+
+  vaultBtns.forEach((btn, index) => {
+    if (!(vaultBtns.includes as (x: unknown) => x is HTMLButtonElement)(btn)) {
+      throw new Error("Element is not 'btn element'");
+    }
+    btn.value = "false";
+    btn.dataset.index = index.toString();
+  });
+
+  // hunterSelect.addEventListener("change", () => {
+  //   vaultBtns.forEach((btn) => {
+  //     if (document.activeElement === btn) {
+  //       console.log(document.activeElement);
+  //     }
+  //   })
+  // })
 
   // for (let i = 0; i < vaultBtns.length; i++) {
   //   const selectedBtn = getElementByIdOrThrow<HTMLButtonElement>(`vault${i}`);
