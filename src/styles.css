@@ -19,3 +19,7 @@ html {
 p {
   font-weight: bold;
 }
+
+.selected {
+  background: turquoise;
+}
