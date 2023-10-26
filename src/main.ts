@@ -69,7 +69,7 @@ function assert(expr: unknown, msg?: string): asserts expr {
   if (!expr) throw new Error(msg);
 }
 
-function getElementByIdOrThrow<T extends HTMLElement>(
+function getElementByIdTyped<T extends HTMLElement>(
   selector: string,
   msg = `Element '${selector}' not found`,
 ): T {
@@ -77,6 +77,23 @@ function getElementByIdOrThrow<T extends HTMLElement>(
   if (!element) throw new Error(msg);
   return element as T;
 }
+
+function consoleLogBtn(msg: string = "", ...log: any[]): void {
+  let btn = getElementByIdTyped<HTMLButtonElement>("console");
+
+  btn.addEventListener("click", () => console.log(msg, ...log));
+}
+
+// function querySelectAllTyped<T extends HTMLElement>(
+//   selector: string,
+//   msg = `Element '${selector}' not found`,
+// ): T[] {
+//   const element = [...document.querySelectorAll(selector)];
+//   element.forEach((elm) => {
+//     if (!(element.includes as (x: unknown) => x is T)(elm)) throw new Error(msg);
+//   });
+//   return element as T[];
+// }
 
 function saveState(): void {
   localStorage.setItem("vaultState", JSON.stringify(vaultState));
@@ -89,19 +106,19 @@ function loadState(): State {
 //*=========================================== MAIN ===========================================*/
 
 function main() {
-  const consoleBtn = getElementByIdOrThrow<HTMLButtonElement>("console");
-  consoleBtn.addEventListener("click", () => {
-    console.log("vaultState.vaults", vaultState.vaults);
-  });
-  let vaultBtns = [...document.querySelectorAll(".vault")];
-  const hunterSelect = getElementByIdOrThrow<HTMLSelectElement>("char-select");
-  const hunterSelectEl = getElementByIdOrThrow<HTMLSelectElement>(
+  const consoleBtn = getElementByIdTyped<HTMLButtonElement>("console");
+  const consoleBtn2 = getElementByIdTyped<HTMLButtonElement>("console2");
+
+  // const vaultBtns = querySelectAllTyped<HTMLButtonElement>(".vault");
+  const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
+  const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
+  const hunterSelectEl = getElementByIdTyped<HTMLSelectElement>(
     "char-select",
   );
 
-  let hunterOptions = [...hunterSelectEl.options]
-    .filter((option) => option.value !== "Select Vault Hunter")
-    .map((option) => option.value);
+  let hunterOptions = [...hunterSelectEl.options];
+  // .filter((option) => option.value !== "Select Vault Hunter")
+  // .map((option) => option.value);
   // .filter((value) => value !== undefined);
 
   // let hunterOptions = [
@@ -152,38 +169,76 @@ function main() {
   //   });
   //   saveState();
   // });
-  const isButtonElm = (x: unknown): x is HTMLButtonElement =>
-    vaultBtns.includes(x as HTMLButtonElement);
 
-  vaultBtns.forEach((btn) => {
-    btn.addEventListener("click", function () {
-      if (!isButtonElm(btn)) {
-        throw new Error("Element not type 'HTMLButtonElement'");
-      }
+  // at moment makes only one btn "active" signified by background color and 'value' changing to "true".
+  vaultBtns.forEach((vaultBtn, index) => {
+    vaultBtn.dataset.index = index.toString();
 
-      if (btn.value) {
-        btn.classList.add("selected");
-        vaultBtns.map((item) => {
-          if (!isButtonElm(item)) {
-            throw new Error("Element not type 'HTMLButtonElement'");
-          }
+    consoleBtn.addEventListener("click", () => {
+      console.log(
+        {
+          // Name: hunterBtn,
+          Index: vaultBtn.dataset.index,
+          btnTxt: vaultBtn.textContent,
+        },
+      );
+    });
 
-          if (item !== btn) {
-            item.value = "false";
-            item.classList.remove("selected");
+    vaultBtn.addEventListener("click", function () {
+      if (vaultBtn.value) {
+        vaultBtn.classList.add("selected");
+        vaultBtn.value = "true";
+
+        vaultBtns.map((btn) => {
+          if (btn !== vaultBtn) {
+            btn.value = "false";
+            btn.classList.remove("selected");
           }
         });
       }
     });
   });
 
-  vaultBtns.forEach((btn, index) => {
-    if (!(vaultBtns.includes as (x: unknown) => x is HTMLButtonElement)(btn)) {
-      throw new Error("Element is not 'btn element'");
-    }
-    btn.value = "false";
-    btn.dataset.index = index.toString();
+  hunterSelect.addEventListener("change", () => {
+    let chosenHunter = hunterSelect.value;
+    vaultBtns.forEach((btn) => {
+      if (btn.value === "true") {
+        let hunterBtn = parseInt(btn.dataset.index!);
+        btn.textContent = chosenHunter;
+
+        /*========================================================================
+         * this could use some work. This removes the 
+         * initialized obj so there isn't an empty vault
+         * in 'vaultState.vaults'.
+         * Else this messes up the index for the 'valutBtns'
+         *========================================================================*/
+        let index = vaultState.vaults.findIndex((i) => i.name === "");
+
+        if (index !== -1) vaultState.vaults.splice(index, 1);
+
+        vaultState.vaults.splice(hunterBtn, 0, {
+          ...vaultState.vaults[hunterBtn],
+          name: chosenHunter,
+        });
+        /*========================================================================*/
+        
+        
+        
+        
+        // hunterOptions.map((o) => {
+        //   if (o !== hunterSelect.selectedOptions[0]) {
+        //     o.setAttribute("disabled", "true");
+        //   }
+        // });
+        // hunterSelect.options
+      }
+    });
   });
+
+  consoleBtn2.addEventListener(
+    "click",
+    () => console.log(vaultState),
+  );
 
   // hunterSelect.addEventListener("change", () => {
   //   vaultBtns.forEach((btn) => {
@@ -194,7 +249,7 @@ function main() {
   // })
 
   // for (let i = 0; i < vaultBtns.length; i++) {
-  //   const selectedBtn = getElementByIdOrThrow<HTMLButtonElement>(`vault${i}`);
+  //   const selectedBtn = getElementByIdTyped<HTMLButtonElement>(`vault${i}`);
   //   selectedBtn.addEventListener("click", () => {
   //     vaultState.vaults.splice(i, 0, {
   //       ...vaultState.vaults[hunterIndex],
@@ -207,11 +262,11 @@ function main() {
   //   });
   // }
 
-  const input = getElementByIdOrThrow<HTMLInputElement>("equip-item-input");
-  const inputType = getElementByIdOrThrow<HTMLSelectElement>("equip-item-type");
-  const equipItemBtn = getElementByIdOrThrow<HTMLButtonElement>("equip-item");
-  const invAddBtn = getElementByIdOrThrow<HTMLButtonElement>("inv-add-item");
-  const clearStore = getElementByIdOrThrow<HTMLButtonElement>("clear-storage");
+  const input = getElementByIdTyped<HTMLInputElement>("equip-item-input");
+  const inputType = getElementByIdTyped<HTMLSelectElement>("equip-item-type");
+  const equipItemBtn = getElementByIdTyped<HTMLButtonElement>("equip-item");
+  const invAddBtn = getElementByIdTyped<HTMLButtonElement>("inv-add-item");
+  const clearStore = getElementByIdTyped<HTMLButtonElement>("clear-storage");
 
   clearStore.addEventListener("click", () => localStorage.clear());
 
@@ -241,11 +296,11 @@ function main() {
     let saveToEquipOrInv;
 
     if (btnElm.id === "equip-item") {
-      ul = getElementByIdOrThrow<HTMLUListElement>(`equip-${typeElm.value}-ul`);
+      ul = getElementByIdTyped<HTMLUListElement>(`equip-${typeElm.value}-ul`);
       ul.dataset.type = `${typeElm.value}`;
       saveToEquipOrInv = vaultStateEquip;
     } else {
-      ul = getElementByIdOrThrow<HTMLUListElement>(`inv-${typeElm.value}-ul`);
+      ul = getElementByIdTyped<HTMLUListElement>(`inv-${typeElm.value}-ul`);
       ul.dataset.type = `${typeElm.value}`;
       saveToEquipOrInv = vaultStateInv;
     }
@@ -268,7 +323,7 @@ function main() {
 
     removeBtn.addEventListener("click", (e) => {
       if (e.target instanceof HTMLButtonElement) {
-        const equipContainer = getElementByIdOrThrow<HTMLDivElement>(
+        const equipContainer = getElementByIdTyped<HTMLDivElement>(
           "equip-con",
         );
 
