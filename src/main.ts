@@ -47,21 +47,6 @@ let vaultState: State = {
       equippedItems: [],
       inventory: [],
     },
-    // {
-    //   name: "athena",
-    //   equippedItems: [],
-    //   inventory: [],
-    // },
-    // {
-    //   name: "aurelia",
-    //   equippedItems: [],
-    //   inventory: [],
-    // },
-    // {
-    //   name: "axton",
-    //   equippedItems: [],
-    //   inventory: [],
-    // },
   ],
 };
 
@@ -78,23 +63,6 @@ function getElementByIdTyped<T extends HTMLElement>(
   return element as T;
 }
 
-function consoleLogBtn(msg: string = "", ...log: any[]): void {
-  let btn = getElementByIdTyped<HTMLButtonElement>("console");
-
-  btn.addEventListener("click", () => console.log(msg, ...log));
-}
-
-// function querySelectAllTyped<T extends HTMLElement>(
-//   selector: string,
-//   msg = `Element '${selector}' not found`,
-// ): T[] {
-//   const element = [...document.querySelectorAll(selector)];
-//   element.forEach((elm) => {
-//     if (!(element.includes as (x: unknown) => x is T)(elm)) throw new Error(msg);
-//   });
-//   return element as T[];
-// }
-
 function saveState(): void {
   localStorage.setItem("vaultState", JSON.stringify(vaultState));
 }
@@ -103,91 +71,48 @@ function loadState(): State {
   return vaultState;
 }
 
-//*=========================================== MAIN ===========================================*/
+//*================================ MAIN ================================*/
 
 function main() {
   const consoleBtn = getElementByIdTyped<HTMLButtonElement>("console");
   const consoleBtn2 = getElementByIdTyped<HTMLButtonElement>("console2");
 
-  // const vaultBtns = querySelectAllTyped<HTMLButtonElement>(".vault");
+  /*================== Hunter/Valut Selection =================*/
+
   const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
   const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
   const hunterSelectEl = getElementByIdTyped<HTMLSelectElement>(
     "char-select",
   );
 
-  let hunterOptions = [...hunterSelectEl.options];
-  // .filter((option) => option.value !== "Select Vault Hunter")
-  // .map((option) => option.value);
-  // .filter((value) => value !== undefined);
+  let hunterIndex: number;
+  // let vaultStateEquip = vaultState.vaults[hunterIndex].equippedItems;
+  // let vaultStateInv = vaultState.vaults[hunterIndex].inventory;
 
-  // let hunterOptions = [
-  //   // ...document.querySelectorAll<HTMLOptionElement>("option[value]"),
-  //   // https://developer.mozilla.org/en-US/docs/Web/CSS/:scope
-  //   ...hunterSelectEl.querySelectorAll<HTMLOptionElement>(":scope > option[value]"),
-  // ].map((option) => option.value);
+  consoleBtn.addEventListener("click", () => {
+    console.log(hunterIndex);
+  });
 
-  // let hunterOptions = [...hunterSelectEl.options].filter((option) =>
-  //   option.hasAttribute("value")
-  // ).map((option) => option.value);
-
-  // console.log(hunterOptions);
-
-  let hunterIndex: number = 0;
-  let vaultStateEquip = vaultState.vaults[hunterIndex].equippedItems;
-  let vaultStateInv = vaultState.vaults[hunterIndex].inventory;
-
-  /*
-  order of operations:
-    - click vault button
-    - select hunter from select options
-    - disable selected hunter from select options
-    - change button text to hunter name
-    - add hunter to vault data
-  currently it is the oposite of this:(
-  */
-  // hunterSelect.addEventListener("change", () => {
-  //   // hunterIndex = hunterSelect.selectedIndex - 1;
-  //   // vaultState.vaults[hunterIndex] = {...vaultState.vaults[hunterIndex], name: hunterSelect.value};
-  //   vaultBtns.forEach((btn, index) => {
-  //     btn.addEventListener("click", () => {
-  //       if (
-  //         (vaultBtns.includes as (x: unknown) => x is HTMLButtonElement)(btn)
-  //       ) {
-  //         btn.dataset.index = "false";
-  //         if (btn.value === "false") {
-  //           btn.dataset.index = index.toString();
-  //           vaultState.vaults[index] = {
-  //             ...vaultState.vaults[index],
-  //             name: hunterSelect.value,
-  //           };
-  //           btn.textContent = hunterSelect.value;
-  //           btn.value = "true";
-  //         }
-  //       }
-  //     });
-  //   });
-  //   saveState();
-  // });
-
-  // at moment makes only one btn "active" signified by background color and 'value' changing to "true".
+  // at moment makes only one btn "active" signified by background
+  // color and 'value' changing to "true".
   vaultBtns.forEach((vaultBtn, index) => {
     vaultBtn.dataset.index = index.toString();
 
-    consoleBtn.addEventListener("click", () => {
-      console.log(
-        {
-          // Name: hunterBtn,
-          Index: vaultBtn.dataset.index,
-          btnTxt: vaultBtn.textContent,
-        },
-      );
-    });
+    // consoleBtn.addEventListener("click", () => {
+    //   console.log(
+    //     {
+    //       // Name: hunterBtn,
+    //       Index: vaultBtn.dataset.index,
+    //       btnTxt: vaultBtn.textContent,
+    //     },
+    //   );
+    // });
 
     vaultBtn.addEventListener("click", function () {
       if (vaultBtn.value) {
         vaultBtn.classList.add("selected");
         vaultBtn.value = "true";
+        hunterIndex = parseInt(vaultBtn.dataset.index!);
 
         vaultBtns.map((btn) => {
           if (btn !== vaultBtn) {
@@ -203,28 +128,15 @@ function main() {
     let chosenHunter = hunterSelect.value;
     vaultBtns.forEach((btn) => {
       if (btn.value === "true") {
-        let hunterBtn = parseInt(btn.dataset.index!);
+        // hunterBtn = parseInt(btn.dataset.index!);
         btn.textContent = chosenHunter;
-
-        /*========================================================================
-         * this could use some work. This removes the 
-         * initialized obj so there isn't an empty vault
-         * in 'vaultState.vaults'.
-         * Else this messes up the index for the 'valutBtns'
-         *========================================================================*/
-        let index = vaultState.vaults.findIndex((i) => i.name === "");
-
-        if (index !== -1) vaultState.vaults.splice(index, 1);
-
-        vaultState.vaults.splice(hunterBtn, 0, {
-          ...vaultState.vaults[hunterBtn],
+        vaultState.vaults[hunterIndex] = {
           name: chosenHunter,
-        });
-        /*========================================================================*/
-        
-        
-        
-        
+          equippedItems: [],
+          inventory: [],
+        };
+        saveState();
+
         // hunterOptions.map((o) => {
         //   if (o !== hunterSelect.selectedOptions[0]) {
         //     o.setAttribute("disabled", "true");
@@ -234,33 +146,32 @@ function main() {
       }
     });
   });
+  /*============================================================*/
 
   consoleBtn2.addEventListener(
     "click",
     () => console.log(vaultState),
   );
 
-  // hunterSelect.addEventListener("change", () => {
-  //   vaultBtns.forEach((btn) => {
-  //     if (document.activeElement === btn) {
-  //       console.log(document.activeElement);
-  //     }
-  //   })
-  // })
+  /*================== Level/Scenario Counters =================*/
 
-  // for (let i = 0; i < vaultBtns.length; i++) {
-  //   const selectedBtn = getElementByIdTyped<HTMLButtonElement>(`vault${i}`);
-  //   selectedBtn.addEventListener("click", () => {
-  //     vaultState.vaults.splice(i, 0, {
-  //       ...vaultState.vaults[hunterIndex],
-  //       name: hunterSelect.value,
-  //     });
-  //     console.log(vaultState.vaults);
-  //     // let selectedHunter = vaultState.vaults[i];
-  //     // selectedBtn.textContent = selectedHunter.name;
-  //     // console.log(hunterIndex);
-  //   });
-  // }
+  const level = getElementByIdTyped<HTMLParagraphElement>("level");
+  const scene = getElementByIdTyped<HTMLParagraphElement>("scenario");
+  const levelDecrease = getElementByIdTyped<HTMLButtonElement>(
+    "level-decrease",
+  );
+  const levelIncrease = getElementByIdTyped<HTMLButtonElement>(
+    "level-increase",
+  );
+  const sceneDecrease = getElementByIdTyped<HTMLButtonElement>(
+    "scenario-decrease",
+  );
+  const sceneIncrease = getElementByIdTyped<HTMLButtonElement>(
+    "scenario-increase",
+  );
+  /*============================================================*/
+
+  /*=========================== Inputs =========================*/
 
   const input = getElementByIdTyped<HTMLInputElement>("equip-item-input");
   const inputType = getElementByIdTyped<HTMLSelectElement>("equip-item-type");
@@ -278,14 +189,14 @@ function main() {
     inputElm: HTMLInputElement,
     btnElm: HTMLButtonElement,
   ): void => {
-    console.log(
-      "after adding",
-      "\n",
-      "equip",
-      vaultStateEquip,
-      "inv",
-      vaultStateInv,
-    );
+    // console.log(
+    //   "after adding",
+    //   "\n",
+    //   "equip",
+    //   vaultState.vaults[hunterIndex].equippedItems,
+    //   "inv",
+    //   vaultState.vaults[hunterIndex].inventory,
+    // );
 
     let newLI = document.createElement("li");
     let removeBtn = document.createElement("button");
@@ -298,11 +209,11 @@ function main() {
     if (btnElm.id === "equip-item") {
       ul = getElementByIdTyped<HTMLUListElement>(`equip-${typeElm.value}-ul`);
       ul.dataset.type = `${typeElm.value}`;
-      saveToEquipOrInv = vaultStateEquip;
+      saveToEquipOrInv = vaultState.vaults[hunterIndex].equippedItems;
     } else {
       ul = getElementByIdTyped<HTMLUListElement>(`inv-${typeElm.value}-ul`);
       ul.dataset.type = `${typeElm.value}`;
-      saveToEquipOrInv = vaultStateInv;
+      saveToEquipOrInv = vaultState.vaults[hunterIndex].inventory;
     }
 
     if (isItemType(typeElm.value)) {
@@ -335,8 +246,8 @@ function main() {
         // if (containingDiv?.id === equipContainer.id) location = vaultStateEquip;
         // if (containingDiv?.id === ivnContainer.id) location = vaultStateInv;
         let location = (containingDiv?.id === equipContainer.id)
-          ? vaultStateEquip
-          : vaultStateInv;
+          ? vaultState.vaults[hunterIndex].equippedItems
+          : vaultState.vaults[hunterIndex].inventory;
 
         if (location === undefined) throw new Error("'location' is undefined");
         if (type === undefined) throw new Error("'data-type' does not exist");
@@ -367,5 +278,6 @@ function main() {
   invAddBtn.addEventListener("click", () => {
     addInputToUL(inputType, input, invAddBtn);
   });
+  /*========================================================================*/
 }
 main();
