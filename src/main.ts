@@ -81,9 +81,6 @@ function main() {
 
   const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
   const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
-  const hunterSelectEl = getElementByIdTyped<HTMLSelectElement>(
-    "char-select",
-  );
 
   let hunterIndex: number;
   // let vaultStateEquip = vaultState.vaults[hunterIndex].equippedItems;
@@ -128,21 +125,19 @@ function main() {
     let chosenHunter = hunterSelect.value;
     vaultBtns.forEach((btn) => {
       if (btn.value === "true") {
-        // hunterBtn = parseInt(btn.dataset.index!);
         btn.textContent = chosenHunter;
+
         vaultState.vaults[hunterIndex] = {
           name: chosenHunter,
           equippedItems: [],
           inventory: [],
         };
-        saveState();
 
-        // hunterOptions.map((o) => {
-        //   if (o !== hunterSelect.selectedOptions[0]) {
-        //     o.setAttribute("disabled", "true");
-        //   }
+        // [...hunterSelect.options].map((o) => {
+        //   if (o.value !== chosenHunter) o.setAttribute("disabled", "true");
         // });
-        // hunterSelect.options
+
+        saveState();
       }
     });
   });
@@ -150,7 +145,7 @@ function main() {
 
   consoleBtn2.addEventListener(
     "click",
-    () => console.log(vaultState),
+    () => {},
   );
 
   /*================== Level/Scenario Counters =================*/
