@@ -90,7 +90,7 @@ function main() {
   // let vaultStateInv = vaultState.vaults[hunterIndex].inventory;
 
   consoleBtn.addEventListener("click", () => {
-    console.log(hunterIndex);
+    saveState();
   });
 
   // at moment makes only one btn "active" signified by background
@@ -155,8 +155,8 @@ function main() {
 
   /*================== Level/Scenario Counters =================*/
 
-  const level = getElementByIdTyped<HTMLParagraphElement>("level");
-  const scene = getElementByIdTyped<HTMLParagraphElement>("scenario");
+  const levelElm = getElementByIdTyped<HTMLParagraphElement>("level");
+  const sceneElm = getElementByIdTyped<HTMLParagraphElement>("scenario");
   const levelDecrease = getElementByIdTyped<HTMLButtonElement>(
     "level-decrease",
   );
@@ -169,8 +169,34 @@ function main() {
   const sceneIncrease = getElementByIdTyped<HTMLButtonElement>(
     "scenario-increase",
   );
-  /*============================================================*/
 
+  [levelDecrease, levelIncrease, sceneDecrease, sceneIncrease].forEach(
+    (elm) => {
+      elm.addEventListener("click", () => {
+        if (vaultState.level !== 0 && elm === levelDecrease) {
+          vaultState.level--;
+          levelElm.textContent = `Level: ${vaultState.level.toString()}`;
+          saveState();
+        }
+        if (vaultState.level >= 0 && elm === levelIncrease) {
+          vaultState.level++;
+          levelElm.textContent = `Level: ${vaultState.level.toString()}`;
+          saveState();
+        }
+        if (vaultState.scenario !== 0 && elm === sceneDecrease) {
+          vaultState.scenario--;
+          sceneElm.textContent = `Scenario: ${vaultState.scenario.toString()}`;
+          saveState();
+        }
+        if (vaultState.scenario >= 0 && elm === sceneIncrease) {
+          vaultState.scenario++;
+          sceneElm.textContent = `Scenario: ${vaultState.scenario.toString()}`;
+          saveState();
+        }
+      });
+    },
+  );
+  /*============================================================*
   /*=========================== Inputs =========================*/
 
   const input = getElementByIdTyped<HTMLInputElement>("equip-item-input");
