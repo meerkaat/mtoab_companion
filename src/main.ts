@@ -83,46 +83,37 @@ function main() {
   const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
 
   let hunterIndex: number;
-  // let vaultStateEquip = vaultState.vaults[hunterIndex].equippedItems;
-  // let vaultStateInv = vaultState.vaults[hunterIndex].inventory;
+  let selectedVaultBtn: HTMLButtonElement;
 
-  consoleBtn.addEventListener("click", () => {
-    saveState();
-  });
+  // Toggles buttons so only one is active at a time.
+  // The active button is the selected vault button.
+  vaultBtns.forEach((button, index) => {
+    button.dataset.index = index.toString();
 
-  // at moment makes only one btn "active" signified by background
-  // color and 'value' changing to "true".
-  vaultBtns.forEach((vaultBtn, index) => {
-    vaultBtn.dataset.index = index.toString();
+    button.addEventListener("click", function () {
+      selectedVaultBtn = button;
+      button.classList.add("selected");
+      button.value = "true";
+      hunterIndex = parseInt(button.dataset.index!);
 
-    // consoleBtn.addEventListener("click", () => {
-    //   console.log(
-    //     {
-    //       // Name: hunterBtn,
-    //       Index: vaultBtn.dataset.index,
-    //       btnTxt: vaultBtn.textContent,
-    //     },
-    //   );
-    // });
-
-    vaultBtn.addEventListener("click", function () {
-      if (vaultBtn.value) {
-        vaultBtn.classList.add("selected");
-        vaultBtn.value = "true";
-        hunterIndex = parseInt(vaultBtn.dataset.index!);
-
-        vaultBtns.map((btn) => {
-          if (btn !== vaultBtn) {
-            btn.value = "false";
-            btn.classList.remove("selected");
-          }
-        });
-      }
+      vaultBtns.map((btn) => {
+        if (btn !== button) {
+          btn.value = "false";
+          btn.classList.remove("selected");
+        }
+      });
     });
   });
 
+  consoleBtn.addEventListener("click", () => {
+    console.log(selectedVaultBtn.value);
+  });
+
+  // Adds selected hunter to active vault button.
+  // Creates/updates hunter on `vaultState.vaults[hunterIndex]` object.
   hunterSelect.addEventListener("change", () => {
     let chosenHunter = hunterSelect.value;
+
     vaultBtns.forEach((btn) => {
       if (btn.value === "true") {
         btn.textContent = chosenHunter;
@@ -133,9 +124,9 @@ function main() {
           inventory: [],
         };
 
-        // [...hunterSelect.options].map((o) => {
-        //   if (o.value !== chosenHunter) o.setAttribute("disabled", "true");
-        // });
+        [...hunterSelect.options].map((o) => {
+          if (o.value === chosenHunter) o.setAttribute("disabled", "true");
+        });
 
         saveState();
       }
@@ -165,6 +156,7 @@ function main() {
     "scenario-increase",
   );
 
+  // Counts for level and scenario.
   [levelDecrease, levelIncrease, sceneDecrease, sceneIncrease].forEach(
     (elm) => {
       elm.addEventListener("click", () => {
@@ -205,20 +197,13 @@ function main() {
   const isItemType = (x: unknown): x is ItemType =>
     itemType.includes(x as ItemType);
 
+  // Creates/updates ULs and `vaultState` properties `equippedItems` and `inventory`
+  // via input element or `removeBtn`s.
   const addInputToUL = (
     typeElm: HTMLSelectElement,
     inputElm: HTMLInputElement,
     btnElm: HTMLButtonElement,
   ): void => {
-    // console.log(
-    //   "after adding",
-    //   "\n",
-    //   "equip",
-    //   vaultState.vaults[hunterIndex].equippedItems,
-    //   "inv",
-    //   vaultState.vaults[hunterIndex].inventory,
-    // );
-
     let newLI = document.createElement("li");
     let removeBtn = document.createElement("button");
     removeBtn.className = "remove-btn";
@@ -263,9 +248,6 @@ function main() {
         let containingDiv = e.target.parentElement?.parentElement
           ?.parentElement;
         let type = e.target.parentElement?.parentElement?.dataset.type;
-
-        // if (containingDiv?.id === equipContainer.id) location = vaultStateEquip;
-        // if (containingDiv?.id === ivnContainer.id) location = vaultStateInv;
         let location = (containingDiv?.id === equipContainer.id)
           ? vaultState.vaults[hunterIndex].equippedItems
           : vaultState.vaults[hunterIndex].inventory;
@@ -275,19 +257,16 @@ function main() {
         if ((itemToDelete === undefined) || (itemToDelete === null)) {
           throw new Error("'itemToDelete' is undefined");
         }
+        
+        let index = location.findIndex((i) =>
+          i.type === type && i.name === itemToDelete
+        );
 
-        if (isItemType(type)) {
-          // let index = location.indexOf();
-          let index = location.findIndex((i) =>
-            i.type === type && i.name === itemToDelete
-          );
+        if (index !== -1) location.splice(index, 1);
 
-          if (index !== -1) location.splice(index, 1);
+        saveState();
 
-          saveState();
-
-          newLI.remove();
-        } else throw new Error("taget doesn't exist");
+        newLI.remove();
       }
     });
   };
