@@ -84,6 +84,7 @@ function main() {
 
   let hunterIndex: number;
   let selectedVaultBtn: HTMLButtonElement;
+  let listOfSelectHunters = new Set();
 
   // Toggles buttons so only one is active at a time.
   // The active button is the selected vault button.
@@ -112,31 +113,34 @@ function main() {
   // Adds selected hunter to active vault button.
   // Creates/updates hunter on `vaultState.vaults[hunterIndex]` object.
   hunterSelect.addEventListener("change", () => {
-    let chosenHunter = hunterSelect.value;
-
     vaultBtns.forEach((btn) => {
       if (btn.value === "true") {
-        btn.textContent = chosenHunter;
+        btn.textContent = hunterSelect.value;
+        listOfSelectHunters.add(hunterSelect.value);
 
         vaultState.vaults[hunterIndex] = {
-          name: chosenHunter,
+          name: hunterSelect.value,
           equippedItems: [],
           inventory: [],
         };
 
         [...hunterSelect.options].map((o) => {
-          if (o.value === chosenHunter) o.setAttribute("disabled", "true");
+          if (listOfSelectHunters.has(o.value)) {
+            o.setAttribute("disabled", "true");
+          }
         });
 
         saveState();
-      }
+      } 
     });
   });
   /*============================================================*/
 
   consoleBtn2.addEventListener(
     "click",
-    () => {},
+    () => {
+      console.log(listOfSelectHunters);
+    },
   );
 
   /*================== Level/Scenario Counters =================*/
@@ -257,7 +261,7 @@ function main() {
         if ((itemToDelete === undefined) || (itemToDelete === null)) {
           throw new Error("'itemToDelete' is undefined");
         }
-        
+
         let index = location.findIndex((i) =>
           i.type === type && i.name === itemToDelete
         );
