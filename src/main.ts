@@ -38,7 +38,7 @@ type State = {
   vaults: VaultData[];
 };
 
-let vaultState: State = {
+const defaultState: State = {
   level: 0,
   scenario: 0,
   vaults: [
@@ -63,17 +63,20 @@ function getElementByIdTyped<T extends HTMLElement>(
   return element as T;
 }
 
-function saveState(): void {
-  localStorage.setItem("vaultState", JSON.stringify(vaultState));
-}
-
-function loadState(): State {
-  return vaultState;
-}
+// function loadState(): State {
+//   return vaultState;
+// }
 
 //*================================ MAIN ================================*/
 
 function main() {
+  const vaultState: State = JSON.parse(localStorage.getItem("vaultState")!) ||
+    defaultState;
+
+  function saveState(): void {
+    localStorage.setItem("vaultState", JSON.stringify(vaultState));
+  }
+
   const consoleBtn = getElementByIdTyped<HTMLButtonElement>("console");
   const consoleBtn2 = getElementByIdTyped<HTMLButtonElement>("console2");
 
@@ -107,7 +110,7 @@ function main() {
   });
 
   consoleBtn.addEventListener("click", () => {
-    console.log(selectedVaultBtn.value);
+    console.log(vaultState);
   });
 
   // Adds selected hunter to active vault button.
@@ -131,7 +134,7 @@ function main() {
         });
 
         saveState();
-      } 
+      }
     });
   });
   /*============================================================*/
@@ -188,6 +191,7 @@ function main() {
     },
   );
   /*============================================================*
+  
   /*=========================== Inputs =========================*/
 
   const input = getElementByIdTyped<HTMLInputElement>("equip-item-input");
@@ -197,6 +201,9 @@ function main() {
   const clearStore = getElementByIdTyped<HTMLButtonElement>("clear-storage");
 
   clearStore.addEventListener("click", () => localStorage.clear());
+
+  // const addRemoveBtn = (): void => {
+  // };
 
   const isItemType = (x: unknown): x is ItemType =>
     itemType.includes(x as ItemType);
@@ -283,5 +290,26 @@ function main() {
     addInputToUL(inputType, input, invAddBtn);
   });
   /*========================================================================*/
+
+  const updateUI = (): void => {
+    levelElm.textContent = vaultState.level.toString();
+    sceneElm.textContent = vaultState.scenario.toString();
+
+    let newLI = document.createElement("li");
+    let removeBtn = document.createElement("button");
+    removeBtn.className = "remove-btn";
+    removeBtn.textContent = "remove";
+
+    for (const items of vaultState.vaults[hunterIndex].equippedItems) {
+      for (const key of Object.keys(items)) {
+        if (!isItemType(items)) throw new Error("error");
+        itemType.forEach((i) => {
+          if (items[key] === i) {
+            
+          }
+        })
+      }
+    }
+  };
 }
 main();
