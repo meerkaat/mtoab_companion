@@ -93,12 +93,16 @@ function main() {
   // The active button is the selected vault button.
   vaultBtns.forEach((button, index) => {
     button.dataset.index = index.toString();
+  });
+
+  vaultBtns.forEach((button) => {
+    // button.dataset.index = index.toString();
 
     button.addEventListener("click", function () {
+      hunterIndex = parseInt(button.dataset.index!);
       selectedVaultBtn = button;
       button.classList.add("selected");
       button.value = "true";
-      hunterIndex = parseInt(button.dataset.index!);
 
       vaultBtns.map((btn) => {
         if (btn !== button) {
@@ -106,6 +110,7 @@ function main() {
           btn.classList.remove("selected");
         }
       });
+      // updateUI();
     });
   });
 
@@ -142,7 +147,7 @@ function main() {
   consoleBtn2.addEventListener(
     "click",
     () => {
-      console.log(listOfSelectHunters);
+      updateUI();
     },
   );
 
@@ -191,7 +196,7 @@ function main() {
     },
   );
   /*============================================================*
-  
+
   /*=========================== Inputs =========================*/
 
   const input = getElementByIdTyped<HTMLInputElement>("equip-item-input");
@@ -223,27 +228,29 @@ function main() {
     let ul;
     let saveToEquipOrInv;
 
-    if (btnElm.id === "equip-item") {
-      ul = getElementByIdTyped<HTMLUListElement>(`equip-${typeElm.value}-ul`);
-      ul.dataset.type = `${typeElm.value}`;
-      saveToEquipOrInv = vaultState.vaults[hunterIndex].equippedItems;
-    } else {
-      ul = getElementByIdTyped<HTMLUListElement>(`inv-${typeElm.value}-ul`);
-      ul.dataset.type = `${typeElm.value}`;
-      saveToEquipOrInv = vaultState.vaults[hunterIndex].inventory;
-    }
+    if (vaultState.vaults[hunterIndex] !== undefined) {
+      if (btnElm.id === "equip-item") {
+        ul = getElementByIdTyped<HTMLUListElement>(`equip-${typeElm.value}-ul`);
+        ul.dataset.type = `${typeElm.value}`;
+        saveToEquipOrInv = vaultState.vaults[hunterIndex].equippedItems;
+      } else {
+        ul = getElementByIdTyped<HTMLUListElement>(`inv-${typeElm.value}-ul`);
+        ul.dataset.type = `${typeElm.value}`;
+        saveToEquipOrInv = vaultState.vaults[hunterIndex].inventory;
+      }
 
-    if (isItemType(typeElm.value)) {
-      if (inputElm.value !== "") {
-        newLI.textContent = inputElm.value;
-        newLI.append(removeBtn);
-        ul.append(newLI);
-        saveToEquipOrInv.push({
-          type: typeElm.value,
-          name: inputElm.value,
-        });
+      if (isItemType(typeElm.value)) {
+        if (inputElm.value !== "") {
+          newLI.textContent = inputElm.value;
+          newLI.append(removeBtn);
+          ul.append(newLI);
+          saveToEquipOrInv.push({
+            type: typeElm.value,
+            name: inputElm.value,
+          });
 
-        saveState();
+          saveState();
+        }
       }
     }
 
@@ -294,22 +301,37 @@ function main() {
   const updateUI = (): void => {
     levelElm.textContent = vaultState.level.toString();
     sceneElm.textContent = vaultState.scenario.toString();
-
+    
     let newLI = document.createElement("li");
     let removeBtn = document.createElement("button");
     removeBtn.className = "remove-btn";
     removeBtn.textContent = "remove";
-
-    for (const items of vaultState.vaults[hunterIndex].equippedItems) {
-      for (const key of Object.keys(items)) {
-        if (!isItemType(items)) throw new Error("error");
-        itemType.forEach((i) => {
-          if (items[key] === i) {
-            
-          }
-        })
+    
+    for (let index = 0; index < vaultBtns.length; index++) {
+      vaultBtns[index].textContent = vaultState.vaults[index].name!;
+    
+    // if (vaultState.vaults[hunterIndex] !== undefined) {
+      const equip = vaultState.vaults[index].equippedItems;
+      for (let i = 0; i < equip.length; i++) {
+        let ul = getElementByIdTyped<HTMLUListElement>(
+          `equip-${equip[i].type}-ul`,
+        );
+        newLI.textContent = equip[i].name;
+        newLI.append(removeBtn);
+        newLI.append(ul);
       }
-    }
+    // }
+
+    // if (vaultState.vaults[i] !== undefined) {
+      const inv = vaultState.vaults[index].inventory;
+      for (let i = 0; i < inv.length; i++) {
+        let ul = getElementByIdTyped<HTMLUListElement>(`inv-${inv[i].type}-ul`);
+        newLI.textContent = inv[i].name;
+        newLI.append(removeBtn);
+        newLI.append(ul);
+      }
+    // }
+  }
   };
 }
 main();
