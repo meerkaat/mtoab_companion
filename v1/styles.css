@@ -1,0 +1,25 @@
+/* @import "./reset.css"; */
+
+html {
+  background-color: grey;
+}
+
+.btn-con {
+  outline: 2px solid red;
+}
+
+.equipped-con {
+  outline: 2px solid blue;
+}
+
+.inventory-con {
+  outline: 2px solid green;
+}
+
+p {
+  font-weight: bold;
+}
+
+.selected {
+  background: turquoise;
+}

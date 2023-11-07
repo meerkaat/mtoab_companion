@@ -15,7 +15,6 @@ const itemType = [
   "weapons",
   "grenades",
   "shields",
-  "mods",
   "misc",
 ] as const;
 
@@ -63,9 +62,55 @@ function getElementByIdTyped<T extends HTMLElement>(
   return element as T;
 }
 
-// function loadState(): State {
-//   return vaultState;
-// }
+function renderEquipAndInv(): void {
+  const main = getElementByIdTyped<HTMLDivElement>("main");
+
+  const html = `
+  <div id="equip-con">
+    <label for="equip-item-input">
+      <select id="equip-item-type" autocomplete="off">
+        <option value="weapons">Weapon</option>
+        <option value="grenades">Grenade</option>
+        <option value="shields">Shield</option>
+        <option value="misc">Misc</option>
+      </select>
+    </label>
+    <input type="text" id="equip-item-input" placeholder="Input Gear">
+    <button id="equip-item">Add item</button>
+    <button id="inv-add-item">Add item</button>
+    <h2>Equipped Gear</h2>
+    <p id="weapons">Weapons</p>
+    <ul id="equip-weapons-ul">
+    </ul>
+    <p id="grenades">Grenades</p>
+    <ul id="equip-grenades-ul">
+    </ul>
+    <p id="shields">Shields</p>
+    <ul id="equip-shields-ul">
+    </ul>
+    <p id="misc">Misc.</p>
+    <ul id="equip-misc-ul">
+    </ul>
+  </div>
+
+  <div id="inventory-con">
+    <h2>Inventory</h2>
+    <p class="inventory" id="weapons-inv">Weapons</p>
+    <ul id="inv-weapons-ul">
+    </ul>
+    <p class="inventory" id="grenades-inv">Grenades</p>
+    <ul id="inv-grenades-ul">
+    </ul>
+    <p class="inventory" id="shields-inv">Shields</p>
+    <ul id="inv-shields-ul">
+    </ul>
+    <p class="inventory" id="misc-inv">Misc.</p>
+    <ul id="inv-misc-ul">
+    </ul>
+  </div>`;
+
+  main.innerHTML = html;
+}
 
 //*================================ MAIN ================================*/
 
@@ -83,7 +128,7 @@ function main() {
   /*================== Hunter/Valut Selection =================*/
 
   const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
-  const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
+  // const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
 
   let hunterIndex: number;
   let selectedVaultBtn: HTMLButtonElement;
@@ -104,234 +149,34 @@ function main() {
       button.classList.add("selected");
       button.value = "true";
 
-      vaultBtns.map((btn) => {
+      vaultBtns.forEach((btn) => {
         if (btn !== button) {
           btn.value = "false";
           btn.classList.remove("selected");
         }
       });
-      // updateUI();
+      updateUI();
     });
   });
 
-  consoleBtn.addEventListener("click", () => {
-    console.log(vaultState);
-  });
-
-  // Adds selected hunter to active vault button.
-  // Creates/updates hunter on `vaultState.vaults[hunterIndex]` object.
-  hunterSelect.addEventListener("change", () => {
-    vaultBtns.forEach((btn) => {
-      if (btn.value === "true") {
-        btn.textContent = hunterSelect.value;
-        listOfSelectHunters.add(hunterSelect.value);
-
-        vaultState.vaults[hunterIndex] = {
-          name: hunterSelect.value,
-          equippedItems: [],
-          inventory: [],
-        };
-
-        [...hunterSelect.options].map((o) => {
-          if (listOfSelectHunters.has(o.value)) {
-            o.setAttribute("disabled", "true");
-          }
-        });
-
-        saveState();
-      }
-    });
-  });
   /*============================================================*/
 
-  consoleBtn2.addEventListener(
-    "click",
-    () => {
-      updateUI();
-    },
-  );
-
-  /*================== Level/Scenario Counters =================*/
-
-  const levelElm = getElementByIdTyped<HTMLParagraphElement>("level");
-  const sceneElm = getElementByIdTyped<HTMLParagraphElement>("scenario");
-  const levelDecrease = getElementByIdTyped<HTMLButtonElement>(
-    "level-decrease",
-  );
-  const levelIncrease = getElementByIdTyped<HTMLButtonElement>(
-    "level-increase",
-  );
-  const sceneDecrease = getElementByIdTyped<HTMLButtonElement>(
-    "scenario-decrease",
-  );
-  const sceneIncrease = getElementByIdTyped<HTMLButtonElement>(
-    "scenario-increase",
-  );
-
-  // Counts for level and scenario.
-  [levelDecrease, levelIncrease, sceneDecrease, sceneIncrease].forEach(
-    (elm) => {
-      elm.addEventListener("click", () => {
-        if (vaultState.level !== 0 && elm === levelDecrease) {
-          vaultState.level--;
-          levelElm.textContent = `Level: ${vaultState.level.toString()}`;
-          saveState();
-        }
-        if (vaultState.level >= 0 && elm === levelIncrease) {
-          vaultState.level++;
-          levelElm.textContent = `Level: ${vaultState.level.toString()}`;
-          saveState();
-        }
-        if (vaultState.scenario !== 0 && elm === sceneDecrease) {
-          vaultState.scenario--;
-          sceneElm.textContent = `Scenario: ${vaultState.scenario.toString()}`;
-          saveState();
-        }
-        if (vaultState.scenario >= 0 && elm === sceneIncrease) {
-          vaultState.scenario++;
-          sceneElm.textContent = `Scenario: ${vaultState.scenario.toString()}`;
-          saveState();
-        }
-      });
-    },
-  );
-  /*============================================================*
-
-  /*=========================== Inputs =========================*/
-
-  const input = getElementByIdTyped<HTMLInputElement>("equip-item-input");
-  const inputType = getElementByIdTyped<HTMLSelectElement>("equip-item-type");
-  const equipItemBtn = getElementByIdTyped<HTMLButtonElement>("equip-item");
-  const invAddBtn = getElementByIdTyped<HTMLButtonElement>("inv-add-item");
-  const clearStore = getElementByIdTyped<HTMLButtonElement>("clear-storage");
-
-  clearStore.addEventListener("click", () => localStorage.clear());
-
-  // const addRemoveBtn = (): void => {
-  // };
-
-  const isItemType = (x: unknown): x is ItemType =>
-    itemType.includes(x as ItemType);
-
-  // Creates/updates ULs and `vaultState` properties `equippedItems` and `inventory`
-  // via input element or `removeBtn`s.
-  const addInputToUL = (
-    typeElm: HTMLSelectElement,
-    inputElm: HTMLInputElement,
-    btnElm: HTMLButtonElement,
-  ): void => {
-    let newLI = document.createElement("li");
-    let removeBtn = document.createElement("button");
-    removeBtn.className = "remove-btn";
-    removeBtn.textContent = "remove";
-
-    let ul;
-    let saveToEquipOrInv;
-
-    if (vaultState.vaults[hunterIndex] !== undefined) {
-      if (btnElm.id === "equip-item") {
-        ul = getElementByIdTyped<HTMLUListElement>(`equip-${typeElm.value}-ul`);
-        ul.dataset.type = `${typeElm.value}`;
-        saveToEquipOrInv = vaultState.vaults[hunterIndex].equippedItems;
-      } else {
-        ul = getElementByIdTyped<HTMLUListElement>(`inv-${typeElm.value}-ul`);
-        ul.dataset.type = `${typeElm.value}`;
-        saveToEquipOrInv = vaultState.vaults[hunterIndex].inventory;
-      }
-
-      if (isItemType(typeElm.value)) {
-        if (inputElm.value !== "") {
-          newLI.textContent = inputElm.value;
-          newLI.append(removeBtn);
-          ul.append(newLI);
-          saveToEquipOrInv.push({
-            type: typeElm.value,
-            name: inputElm.value,
-          });
-
-          saveState();
-        }
-      }
-    }
-
-    inputElm.value = "";
-
-    removeBtn.addEventListener("click", (e) => {
-      if (e.target instanceof HTMLButtonElement) {
-        const equipContainer = getElementByIdTyped<HTMLDivElement>(
-          "equip-con",
-        );
-
-        let itemToDelete = e.target.parentElement?.firstChild?.textContent;
-        let containingDiv = e.target.parentElement?.parentElement
-          ?.parentElement;
-        let type = e.target.parentElement?.parentElement?.dataset.type;
-        let location = (containingDiv?.id === equipContainer.id)
-          ? vaultState.vaults[hunterIndex].equippedItems
-          : vaultState.vaults[hunterIndex].inventory;
-
-        if (location === undefined) throw new Error("'location' is undefined");
-        if (type === undefined) throw new Error("'data-type' does not exist");
-        if ((itemToDelete === undefined) || (itemToDelete === null)) {
-          throw new Error("'itemToDelete' is undefined");
-        }
-
-        let index = location.findIndex((i) =>
-          i.type === type && i.name === itemToDelete
-        );
-
-        if (index !== -1) location.splice(index, 1);
-
-        saveState();
-
-        newLI.remove();
-      }
-    });
-  };
-
-  equipItemBtn.addEventListener("click", () => {
-    addInputToUL(inputType, input, equipItemBtn);
+  consoleBtn.addEventListener("click", () => {
+    renderEquipAndInv()
   });
 
-  invAddBtn.addEventListener("click", () => {
-    addInputToUL(inputType, input, invAddBtn);
-  });
+  // consoleBtn2.addEventListener(
+  //   "click",
+  //   () => {
+  //     updateUI();
+  //   },
+  // );
+
   /*========================================================================*/
 
-  const updateUI = (): void => {
-    levelElm.textContent = vaultState.level.toString();
-    sceneElm.textContent = vaultState.scenario.toString();
-    
-    let newLI = document.createElement("li");
-    let removeBtn = document.createElement("button");
-    removeBtn.className = "remove-btn";
-    removeBtn.textContent = "remove";
-    
-    for (let index = 0; index < vaultBtns.length; index++) {
-      vaultBtns[index].textContent = vaultState.vaults[index].name!;
-    
-    // if (vaultState.vaults[hunterIndex] !== undefined) {
-      const equip = vaultState.vaults[index].equippedItems;
-      for (let i = 0; i < equip.length; i++) {
-        let ul = getElementByIdTyped<HTMLUListElement>(
-          `equip-${equip[i].type}-ul`,
-        );
-        newLI.textContent = equip[i].name;
-        newLI.append(removeBtn);
-        newLI.append(ul);
-      }
-    // }
-
-    // if (vaultState.vaults[i] !== undefined) {
-      const inv = vaultState.vaults[index].inventory;
-      for (let i = 0; i < inv.length; i++) {
-        let ul = getElementByIdTyped<HTMLUListElement>(`inv-${inv[i].type}-ul`);
-        newLI.textContent = inv[i].name;
-        newLI.append(removeBtn);
-        newLI.append(ul);
-      }
-    // }
+  function updateUI(): void {
+    renderEquipAndInv();
   }
-  };
 }
+
 main();
