@@ -67,17 +67,6 @@ function renderEquipAndInv(): void {
 
   const html = `
   <div id="equip-con">
-    <label for="equip-item-input">
-      <select id="equip-item-type" autocomplete="off">
-        <option value="weapons">Weapon</option>
-        <option value="grenades">Grenade</option>
-        <option value="shields">Shield</option>
-        <option value="misc">Misc</option>
-      </select>
-    </label>
-    <input type="text" id="equip-item-input" placeholder="Input Gear">
-    <button id="equip-item">Add item</button>
-    <button id="inv-add-item">Add item</button>
     <h2>Equipped Gear</h2>
     <p id="weapons">Weapons</p>
     <ul id="equip-weapons-ul">
@@ -107,7 +96,8 @@ function renderEquipAndInv(): void {
     <p class="inventory" id="misc-inv">Misc.</p>
     <ul id="inv-misc-ul">
     </ul>
-  </div>`;
+  </div>
+  `;
 
   main.innerHTML = html;
 }
@@ -126,9 +116,8 @@ function main() {
   const consoleBtn2 = getElementByIdTyped<HTMLButtonElement>("console2");
 
   /*================== Hunter/Valut Selection =================*/
-
+  const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
   const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
-  // const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
 
   let hunterIndex: number;
   let selectedVaultBtn: HTMLButtonElement;
@@ -136,12 +125,8 @@ function main() {
 
   // Toggles buttons so only one is active at a time.
   // The active button is the selected vault button.
-  vaultBtns.forEach((button, index) => {
+  for (let [index, button] of vaultBtns.entries()) {
     button.dataset.index = index.toString();
-  });
-
-  vaultBtns.forEach((button) => {
-    // button.dataset.index = index.toString();
 
     button.addEventListener("click", function () {
       hunterIndex = parseInt(button.dataset.index!);
@@ -149,34 +134,42 @@ function main() {
       button.classList.add("selected");
       button.value = "true";
 
-      vaultBtns.forEach((btn) => {
+      for (const btn of vaultBtns) {
         if (btn !== button) {
           btn.value = "false";
           btn.classList.remove("selected");
         }
-      });
-      updateUI();
+      }
     });
-  });
+  }
+
+  const selectVaultHunter = () => {
+    let selectedHunter;
+
+    hunterSelect.addEventListener("change", () => {
+      selectedHunter = hunterSelect.options[hunterSelect.selectedIndex]
+        ?.textContent!;
+      let vault = vaultState.vaults[hunterIndex];
+      if (vault) {
+        vault.name = selectedHunter;
+        saveState();
+      }
+    });
+    return selectedHunter;
+  };
 
   /*============================================================*/
 
   consoleBtn.addEventListener("click", () => {
-    renderEquipAndInv()
+    // renderEquipAndInv();
   });
 
-  // consoleBtn2.addEventListener(
-  //   "click",
-  //   () => {
-  //     updateUI();
-  //   },
-  // );
-
   /*========================================================================*/
+
+  selectVaultHunter();
 
   function updateUI(): void {
     renderEquipAndInv();
   }
 }
-
 main();

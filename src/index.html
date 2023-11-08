@@ -13,6 +13,8 @@
 <body>
   <button id="console">console.log</button>
   <button id="console2">console.log2</button>
+  <button id="clear-storage">Clear Storage</button>
+
   <div class="btn-con">
     <button class="vault" id="vault0" value="false">(empty)</button>
     <button class="vault" id="vault1" value="false">(empty)</button>
@@ -20,10 +22,7 @@
     <button class="vault" id="vault3" value="false">(empty)</button>
   </div>
 
-  <div id="main">
-  </div>
-
-  <!-- <select id="char-select" autocomplete="off">
+  <select id="char-select" autocomplete="off">
     <option selected="true" disabled="true" hidden="true">Select Vault Hunter</option>
     <option value="amara">Amara</option>
     <option value="athena">Athena</option>
@@ -42,8 +41,7 @@
   <button id="scenario-decrease">-</button>
   <button id="scenario-increase">+</button>
 
-
-  <div id="equip-con">
+  <div id="gear-input">
     <label for="equip-item-input">
       <select id="equip-item-type" autocomplete="off">
         <option value="weapons">Weapon</option>
@@ -53,8 +51,14 @@
       </select>
     </label>
     <input type="text" id="equip-item-input" placeholder="Input Gear">
-    <button id="equip-item">Add item</button>
-    <button id="inv-add-item">Add item</button>
+    <button id="equip-item">Gear</button>
+    <button id="inv-add-item">Inventory</button>
+  </div>
+
+  <div id="main">
+  </div>
+  
+  <!-- <div id="equip-con"> 
     <h2>Equipped Gear</h2>
     <p id="weapons">Weapons</p>
     <ul id="equip-weapons-ul">
@@ -86,7 +90,6 @@
     </ul>
   </div> -->
 
-  <button id="clear-storage">Clear Storage</button>
 
 </body>
 
