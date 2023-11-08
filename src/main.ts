@@ -12,9 +12,9 @@ type JsonValue =
   | { [key: string]: JsonValue | undefined };
 
 const itemType = [
-  "weapons",
-  "grenades",
-  "shields",
+  "weapon",
+  "grenade",
+  "shield",
   "misc",
 ] as const;
 
@@ -42,9 +42,9 @@ const defaultState: State = {
   scenario: 0,
   vaults: [
     {
-      name: "",
-      equippedItems: [],
-      inventory: [],
+      name: "shaun",
+      equippedItems: [{ type: "weapon", name: "bfg" }],
+      inventory: [{ type: "shield", name: "small" }],
     },
   ],
 };
@@ -68,14 +68,14 @@ function renderEquipAndInv(): void {
   const html = `
   <div id="equip-con">
     <h2>Equipped Gear</h2>
-    <p id="weapons">Weapons</p>
-    <ul id="equip-weapons-ul">
+    <p id="weapon">Weapons</p>
+    <ul id="equip-weapon-ul">
     </ul>
-    <p id="grenades">Grenades</p>
-    <ul id="equip-grenades-ul">
+    <p id="grenade">Grenades</p>
+    <ul id="equip-grenade-ul">
     </ul>
-    <p id="shields">Shields</p>
-    <ul id="equip-shields-ul">
+    <p id="shield">Shields</p>
+    <ul id="equip-shield-ul">
     </ul>
     <p id="misc">Misc.</p>
     <ul id="equip-misc-ul">
@@ -84,14 +84,14 @@ function renderEquipAndInv(): void {
 
   <div id="inventory-con">
     <h2>Inventory</h2>
-    <p class="inventory" id="weapons-inv">Weapons</p>
-    <ul id="inv-weapons-ul">
+    <p class="inventory" id="weapon-inv">Weapons</p>
+    <ul id="inv-weapon-ul">
     </ul>
-    <p class="inventory" id="grenades-inv">Grenades</p>
-    <ul id="inv-grenades-ul">
+    <p class="inventory" id="grenade-inv">Grenades</p>
+    <ul id="inv-grenade-ul">
     </ul>
-    <p class="inventory" id="shields-inv">Shields</p>
-    <ul id="inv-shields-ul">
+    <p class="inventory" id="shield-inv">Shields</p>
+    <ul id="inv-shield-ul">
     </ul>
     <p class="inventory" id="misc-inv">Misc.</p>
     <ul id="inv-misc-ul">
@@ -102,11 +102,74 @@ function renderEquipAndInv(): void {
   main.innerHTML = html;
 }
 
+function addItemsToUL(data: State): void {
+  const vault = data.vaults[hunterIndex];
+
+  if (vault !== undefined) {
+    for (const item of vault.equippedItems) {
+      const ul = getElementByIdTyped<HTMLUListElement>(`equip-${item.type}-ul`);
+      ul.dataset.type = item.type;
+      let newLI = document.createElement("li");
+      newLI.textContent = item.name;
+      ul.append(newLI);
+    }
+
+    for (const item of vault.inventory) {
+      const ul = getElementByIdTyped<HTMLUListElement>(`inv-${item.type}-ul`);
+      ul.dataset.type = item.type;
+      let newLI = document.createElement("li");
+      newLI.textContent = item.name;
+      addRemoveBtn(newLI);
+      ul.append(newLI);
+    }
+  }
+}
+
+function addRemoveBtn(element: HTMLLIElement): void {
+  const removeBtn = document.createElement("button");
+  removeBtn.textContent = "remove";
+  removeBtn.id = "remove-btn";
+  element.append(removeBtn);
+
+  removeBtn.addEventListener("click", () => {
+    deleteItemFromStateAndDOM(removeBtn, element, defaultState);
+  });
+}
+
+function deleteItemFromStateAndDOM(
+  btnElm: HTMLButtonElement,
+  elmToRemove: HTMLLIElement,
+  data: State,
+): void {
+  const equipCon = getElementByIdTyped<HTMLDivElement>("equip-con");
+
+  const containingDiv = btnElm.parentElement?.parentElement?.parentElement;
+  const itemType = btnElm.parentElement?.parentElement?.dataset.type;
+  const itemName = btnElm.parentElement?.firstChild?.textContent;
+
+  let location = data.vaults[hunterIndex]?.[
+    (equipCon.id === containingDiv?.id) ? "equippedItems" : "inventory"
+  ];
+
+  if (location === undefined) throw new Error("'location' is undefined");
+
+  let index = location.findIndex((i) =>
+    i.type === itemType && i.name === itemName
+  );
+
+  if (index !== -1) location?.splice(index, 1);
+
+  elmToRemove.remove();
+}
+
+let hunterIndex: number = 0;
+
 //*================================ MAIN ================================*/
 
 function main() {
-  const vaultState: State = JSON.parse(localStorage.getItem("vaultState")!) ||
-    defaultState;
+  // const vaultState: State = JSON.parse(localStorage.getItem("vaultState")!) ||
+  //   defaultState;
+  const vaultState: State = defaultState;
 
   function saveState(): void {
     localStorage.setItem("vaultState", JSON.stringify(vaultState));
@@ -114,12 +177,15 @@ function main() {
 
   const consoleBtn = getElementByIdTyped<HTMLButtonElement>("console");
   const consoleBtn2 = getElementByIdTyped<HTMLButtonElement>("console2");
+  const clearStore = getElementByIdTyped<HTMLButtonElement>("clear-storage");
+
+  clearStore.addEventListener("click", () => localStorage.clear());
 
   /*================== Hunter/Valut Selection =================*/
   const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
   const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
 
-  let hunterIndex: number;
+  // let hunterIndex: number = 0;
   let selectedVaultBtn: HTMLButtonElement;
   let listOfSelectHunters = new Set();
 
@@ -133,6 +199,7 @@ function main() {
       selectedVaultBtn = button;
       button.classList.add("selected");
       button.value = "true";
+      updateUI();
 
       for (const btn of vaultBtns) {
         if (btn !== button) {
@@ -162,13 +229,17 @@ function main() {
 
   consoleBtn.addEventListener("click", () => {
     // renderEquipAndInv();
+    addItemsToUL(defaultState);
   });
+
+  consoleBtn2.addEventListener("click", () => {
+    console.log(defaultState.vaults[hunterIndex]?.inventory);
+  })
 
   /*========================================================================*/
 
-  selectVaultHunter();
-
   function updateUI(): void {
+    // selectVaultHunter();
     renderEquipAndInv();
   }
 }
