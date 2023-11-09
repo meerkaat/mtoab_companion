@@ -111,6 +111,7 @@ function addItemsToUL(data: State): void {
       ul.dataset.type = item.type;
       let newLI = document.createElement("li");
       newLI.textContent = item.name;
+      addRemoveBtn(newLI);
       ul.append(newLI);
     }
 
@@ -233,7 +234,7 @@ function main() {
   });
 
   consoleBtn2.addEventListener("click", () => {
-    console.log(defaultState.vaults[hunterIndex]?.inventory);
+    console.log(defaultState.vaults[hunterIndex]);
   })
 
   /*========================================================================*/
