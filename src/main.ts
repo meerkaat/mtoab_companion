@@ -45,15 +45,15 @@ const defaultState: State = {
   scenario: 0,
   vaults: [
     {
-      name: "",
-      equippedItems: [],
-      inventory: [],
+      name: "shaun",
+      equippedItems: [{ type: "grenade", name: "boom" }],
+      inventory: [{ type: "grenade", name: "boom" }],
     },
   ],
 };
 
-function addItemsToUL(data: State, vaultIndex: number): void {
-  const vault = data.vaults[vaultIndex];
+function addItemsToUL(data: State, index: number): void {
+  const vault = data.vaults[index];
 
   if (vault !== undefined) {
     for (const item of vault.equippedItems) {
@@ -61,7 +61,7 @@ function addItemsToUL(data: State, vaultIndex: number): void {
       ul.dataset.type = item.type;
       let newLI = document.createElement("li");
       newLI.textContent = item.name;
-      addRemoveBtn(newLI);
+      addRemoveBtn(newLI, data);
       ul.append(newLI);
     }
 
@@ -70,20 +70,20 @@ function addItemsToUL(data: State, vaultIndex: number): void {
       ul.dataset.type = item.type;
       let newLI = document.createElement("li");
       newLI.textContent = item.name;
-      addRemoveBtn(newLI);
+      addRemoveBtn(newLI, data);
       ul.append(newLI);
     }
   }
 }
 
-function addRemoveBtn(element: HTMLLIElement): void {
+function addRemoveBtn(element: HTMLLIElement, data: State): void {
   const removeBtn = document.createElement("button");
   removeBtn.textContent = "remove";
   removeBtn.id = "remove-btn";
   element.append(removeBtn);
 
   removeBtn.addEventListener("click", () => {
-    deleteItemFromStateAndDOM(removeBtn, element, defaultState);
+    deleteItemFromStateAndDOM(removeBtn, element, data);
   });
 }
 
@@ -129,7 +129,7 @@ function main() {
   const vaultState: State = defaultState;
 
   function saveState(): void {
-    localStorage.setItem("vaultState", JSON.stringify(defaultState));
+    localStorage.setItem("vaultState", JSON.stringify(vaultState));
   }
 
   const consoleBtn = getElementByIdTyped<HTMLButtonElement>("console");
@@ -152,6 +152,30 @@ function main() {
     }
   };
 
+  const addInputToVaultState = (
+    btn: HTMLButtonElement,
+    inputElm: HTMLInputElement,
+  ): void => {
+    let typeElm = getElementByIdTyped<HTMLSelectElement>("item-type");
+    let type = typeElm.value;
+    let name = inputElm.value;
+    let location = vaultState.vaults[hunterIndex]?.[
+      (btn.id === "equip-btn") ? "equippedItems" : "inventory"
+    ];
+
+    if (
+      ((itemType.includes as (x: unknown) => x is ItemType)(type)) &&
+      (name !== undefined && name)
+    ) {
+      location?.push({
+        type,
+        name,
+      });
+      saveState();
+      input.value = "";
+    }
+  };
+
   // Toggles buttons so only one is active at a time.
   // The active button is the selected vault button.
   for (let [index, button] of vaultBtns.entries()) {
@@ -162,7 +186,7 @@ function main() {
       button.classList.add("selected");
       button.value = "true";
       enableActionElements(button);
-      updateUI(defaultState, hunterIndex);
+      updateUI(vaultState, hunterIndex);
 
       for (const btn of vaultBtns) {
         if (btn !== button) {
@@ -181,8 +205,8 @@ function main() {
 
         btn.textContent = selectedHunter;
 
-        if (defaultState.vaults) {
-          defaultState.vaults[hunterIndex] = {
+        if (vaultState.vaults) {
+          vaultState.vaults[hunterIndex] = {
             name: selectedHunter,
             equippedItems: [],
             inventory: [],
@@ -193,6 +217,16 @@ function main() {
     }
   });
 
+  const gearBtns = document.querySelectorAll<HTMLButtonElement>(".add-gear");
+  const input = getElementByIdTyped<HTMLInputElement>("item-input");
+
+  for (const btn of gearBtns) {
+    btn.addEventListener("click", () => {
+      addInputToVaultState(btn, input);
+      updateUI(vaultState, hunterIndex);
+    });
+  }
+
   /*============================================================*/
 
   consoleBtn.addEventListener("click", () => {
@@ -200,7 +234,7 @@ function main() {
   });
 
   consoleBtn2.addEventListener("click", () => {
-    console.log(defaultState.vaults[hunterIndex]);
+    console.log(vaultState.vaults[hunterIndex]);
   });
 
   /*========================================================================*/
