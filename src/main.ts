@@ -124,34 +124,23 @@ let hunterIndex: number = 0;
 //*================================ MAIN ================================*/
 
 function main() {
-  // const vaultState: State = JSON.parse(localStorage.getItem("vaultState")!) ||
-  //   defaultState;
-  const vaultState: State = defaultState;
+  /*============================ temp helper btns ===========================*/
+  const consoleBtn = getElementByIdTyped<HTMLButtonElement>("console");
+  const consoleBtn2 = getElementByIdTyped<HTMLButtonElement>("console2");
+  const clearStore = getElementByIdTyped<HTMLButtonElement>("clear-storage");
+  clearStore.addEventListener("click", () => localStorage.clear());
+  /*=========================================================================*/
+
+  const vaultState: State = JSON.parse(localStorage.getItem("vaultState")!) ||
+    defaultState;
+  // const vaultState: State = defaultState;
 
   function saveState(): void {
     localStorage.setItem("vaultState", JSON.stringify(vaultState));
   }
-
-  const consoleBtn = getElementByIdTyped<HTMLButtonElement>("console");
-  const consoleBtn2 = getElementByIdTyped<HTMLButtonElement>("console2");
-  const clearStore = getElementByIdTyped<HTMLButtonElement>("clear-storage");
-
-  clearStore.addEventListener("click", () => localStorage.clear());
-
-  /*================== Hunter/Valut Selection =================*/
-  const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
-  const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
-  const elmToEnable = [...document.querySelectorAll<HTMLElement>(".toggle")];
-
-  // let hunterIndex: number = 0;
-  let listOfSelectHunters = new Set();
-
-  const enableActionElements = (btn: HTMLButtonElement): void => {
-    for (const elm of elmToEnable) {
-      elm.removeAttribute("disabled");
-    }
-  };
-
+  
+  /*=========================================================================*/  
+  
   const addInputToVaultState = (
     btn: HTMLButtonElement,
     inputElm: HTMLInputElement,
@@ -175,6 +164,21 @@ function main() {
       input.value = "";
     }
   };
+
+  const elmToEnable = [...document.querySelectorAll<HTMLElement>(".toggle")];
+
+  const enableActionElements = (btn: HTMLButtonElement): void => {
+    for (const elm of elmToEnable) {
+      elm.removeAttribute("disabled");
+    }
+  };
+
+  /*========================== Hunter/Vault Selection ==========================*/
+
+  // let hunterIndex: number = 0;
+  let listOfSelectHunters = new Set();
+  const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
+  const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
 
   // Toggles buttons so only one is active at a time.
   // The active button is the selected vault button.
@@ -217,9 +221,56 @@ function main() {
     }
   });
 
+  /*======================== Level/Scenario Counters ========================*/
+
+  const levelElm = getElementByIdTyped<HTMLParagraphElement>("level");
+  const sceneElm = getElementByIdTyped<HTMLParagraphElement>("scenario");
+  const levelDecrease = getElementByIdTyped<HTMLButtonElement>(
+    "level-decrease",
+  );
+  const levelIncrease = getElementByIdTyped<HTMLButtonElement>(
+    "level-increase",
+  );
+  const sceneDecrease = getElementByIdTyped<HTMLButtonElement>(
+    "scenario-decrease",
+  );
+  const sceneIncrease = getElementByIdTyped<HTMLButtonElement>(
+    "scenario-increase",
+  );
+
+  // Counts for level and scenario.
+  [levelDecrease, levelIncrease, sceneDecrease, sceneIncrease].forEach(
+    (elm) => {
+      elm.addEventListener("click", () => {
+        if (vaultState.level !== 0 && elm === levelDecrease) {
+          vaultState.level--;
+          levelElm.textContent = `Level: ${vaultState.level.toString()}`;
+          saveState();
+        }
+        if (vaultState.level >= 0 && elm === levelIncrease) {
+          vaultState.level++;
+          levelElm.textContent = `Level: ${vaultState.level.toString()}`;
+          saveState();
+        }
+        if (vaultState.scenario !== 0 && elm === sceneDecrease) {
+          vaultState.scenario--;
+          sceneElm.textContent = `Scenario: ${vaultState.scenario.toString()}`;
+          saveState();
+        }
+        if (vaultState.scenario >= 0 && elm === sceneIncrease) {
+          vaultState.scenario++;
+          sceneElm.textContent = `Scenario: ${vaultState.scenario.toString()}`;
+          saveState();
+        }
+      });
+    },
+  );
+
+  /*==================== Btns for adding to equipped or inventory ====================*/
+  
   const gearBtns = document.querySelectorAll<HTMLButtonElement>(".add-gear");
   const input = getElementByIdTyped<HTMLInputElement>("item-input");
-
+  // Determines what array input should be pushed to, ...equippedItems or ...inventory
   for (const btn of gearBtns) {
     btn.addEventListener("click", () => {
       addInputToVaultState(btn, input);
@@ -227,7 +278,7 @@ function main() {
     });
   }
 
-  /*============================================================*/
+  /*=============================================*/
 
   consoleBtn.addEventListener("click", () => {
     // renderEquipAndInv();
@@ -237,6 +288,6 @@ function main() {
     console.log(vaultState.vaults[hunterIndex]);
   });
 
-  /*========================================================================*/
+  /*=============================================*/
 }
 main();
