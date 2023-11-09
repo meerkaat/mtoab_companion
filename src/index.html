@@ -22,8 +22,8 @@
     <button class="vault" id="vault3" value="false">(empty)</button>
   </div>
 
-  <select id="char-select" autocomplete="off">
-    <option selected="true" disabled="true" hidden="true">Select Vault Hunter</option>
+  <select id="char-select" class="toggle" disabled="true" autocomplete="off">
+    <option selected="true" hidden="true">Select Vault Hunter</option>
     <option value="amara">Amara</option>
     <option value="athena">Athena</option>
     <option value="aurelia">Aurelia</option>
@@ -35,24 +35,24 @@
   </select>
 
   <p id="level">Level: <span id="level-num">0</span></p>
-  <button id="level-decrease">-</button>
-  <button id="level-increase">+</button>
+  <button id="level-decrease" class="toggle" disabled="true">-</button>
+  <button id="level-increase" class="toggle" disabled="true">+</button>
   <p id="scenario">Scenario: <span id="scene-num">0</span></p>
-  <button id="scenario-decrease">-</button>
-  <button id="scenario-increase">+</button>
+  <button id="scenario-decrease" class="toggle" disabled="true">-</button>
+  <button id="scenario-increase" class="toggle" disabled="true">+</button>
 
   <div id="gear-input">
     <label for="equip-item-input">
-      <select id="equip-item-type" autocomplete="off">
+      <select id="equip-item-type" class="toggle" disabled="true" autocomplete="off">
         <option value="weapons">Weapon</option>
         <option value="grenades">Grenade</option>
         <option value="shields">Shield</option>
         <option value="misc">Misc</option>
       </select>
     </label>
-    <input type="text" id="equip-item-input" placeholder="Input Gear">
-    <button id="equip-item">Gear</button>
-    <button id="inv-add-item">Inventory</button>
+    <input type="text" id="equip-item-input" class="toggle" disabled="true" placeholder="Input Gear">
+    <button id="equip-item" class="toggle" disabled="true">Gear</button>
+    <button id="inv-add-item" class="toggle" disabled="true">Inventory</button>
   </div>
 
   <div id="main">

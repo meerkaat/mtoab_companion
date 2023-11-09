@@ -2,6 +2,9 @@
 // so I'm not sure what these data structures should look like…
 // 🔥🔥🔥🔥🔥🔥🚿🚒 *Me dealing with the heat*
 
+import { renderEquipAndInv } from "./template.js";
+import { assert, getElementByIdTyped } from "./utilities.js";
+
 /** Any valid JSON value */
 type JsonValue =
   | boolean
@@ -42,68 +45,15 @@ const defaultState: State = {
   scenario: 0,
   vaults: [
     {
-      name: "shaun",
-      equippedItems: [{ type: "weapon", name: "bfg" }],
-      inventory: [{ type: "shield", name: "small" }],
+      name: "",
+      equippedItems: [],
+      inventory: [],
     },
   ],
 };
 
-function assert(expr: unknown, msg?: string): asserts expr {
-  if (!expr) throw new Error(msg);
-}
-
-function getElementByIdTyped<T extends HTMLElement>(
-  selector: string,
-  msg = `Element '${selector}' not found`,
-): T {
-  const element = document.getElementById(selector);
-  if (!element) throw new Error(msg);
-  return element as T;
-}
-
-function renderEquipAndInv(): void {
-  const main = getElementByIdTyped<HTMLDivElement>("main");
-
-  const html = `
-  <div id="equip-con">
-    <h2>Equipped Gear</h2>
-    <p id="weapon">Weapons</p>
-    <ul id="equip-weapon-ul">
-    </ul>
-    <p id="grenade">Grenades</p>
-    <ul id="equip-grenade-ul">
-    </ul>
-    <p id="shield">Shields</p>
-    <ul id="equip-shield-ul">
-    </ul>
-    <p id="misc">Misc.</p>
-    <ul id="equip-misc-ul">
-    </ul>
-  </div>
-
-  <div id="inventory-con">
-    <h2>Inventory</h2>
-    <p class="inventory" id="weapon-inv">Weapons</p>
-    <ul id="inv-weapon-ul">
-    </ul>
-    <p class="inventory" id="grenade-inv">Grenades</p>
-    <ul id="inv-grenade-ul">
-    </ul>
-    <p class="inventory" id="shield-inv">Shields</p>
-    <ul id="inv-shield-ul">
-    </ul>
-    <p class="inventory" id="misc-inv">Misc.</p>
-    <ul id="inv-misc-ul">
-    </ul>
-  </div>
-  `;
-
-  main.innerHTML = html;
-}
-
-function addItemsToUL(data: State): void {
-  const vault = data.vaults[hunterIndex];
+function addItemsToUL(data: State, vaultIndex: number): void {
+  const vault = data.vaults[vaultIndex];
 
   if (vault !== undefined) {
     for (const item of vault.equippedItems) {
@@ -163,6 +113,12 @@ function deleteItemFromStateAndDOM(
   elmToRemove.remove();
 }
 
+function updateUI(data: State, index: number): void {
+  // selectVaultHunter();
+  renderEquipAndInv();
+  addItemsToUL(data, index);
+}
+
 let hunterIndex: number = 0;
 
 //*================================ MAIN ================================*/
@@ -173,7 +129,7 @@ function main() {
   const vaultState: State = defaultState;
 
   function saveState(): void {
-    localStorage.setItem("vaultState", JSON.stringify(vaultState));
+    localStorage.setItem("vaultState", JSON.stringify(defaultState));
   }
 
   const consoleBtn = getElementByIdTyped<HTMLButtonElement>("console");
@@ -185,10 +141,16 @@ function main() {
   /*================== Hunter/Valut Selection =================*/
   const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
   const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
+  const elmToEnable = [...document.querySelectorAll<HTMLElement>(".toggle")];
 
   // let hunterIndex: number = 0;
-  let selectedVaultBtn: HTMLButtonElement;
   let listOfSelectHunters = new Set();
+
+  const enableActionElements = (btn: HTMLButtonElement): void => {
+    for (const elm of elmToEnable) {
+      elm.removeAttribute("disabled");
+    }
+  };
 
   // Toggles buttons so only one is active at a time.
   // The active button is the selected vault button.
@@ -197,10 +159,10 @@ function main() {
 
     button.addEventListener("click", function () {
       hunterIndex = parseInt(button.dataset.index!);
-      selectedVaultBtn = button;
       button.classList.add("selected");
       button.value = "true";
-      updateUI();
+      enableActionElements(button);
+      updateUI(defaultState, hunterIndex);
 
       for (const btn of vaultBtns) {
         if (btn !== button) {
@@ -211,37 +173,36 @@ function main() {
     });
   }
 
-  const selectVaultHunter = () => {
-    let selectedHunter;
+  hunterSelect.addEventListener("change", () => {
+    for (const btn of vaultBtns) {
+      if (btn.value === "true") {
+        let selectedHunter = hunterSelect.options[hunterSelect.selectedIndex]
+          ?.textContent!;
 
-    hunterSelect.addEventListener("change", () => {
-      selectedHunter = hunterSelect.options[hunterSelect.selectedIndex]
-        ?.textContent!;
-      let vault = vaultState.vaults[hunterIndex];
-      if (vault) {
-        vault.name = selectedHunter;
-        saveState();
+        btn.textContent = selectedHunter;
+
+        if (defaultState.vaults) {
+          defaultState.vaults[hunterIndex] = {
+            name: selectedHunter,
+            equippedItems: [],
+            inventory: [],
+          };
+          saveState();
+        }
       }
-    });
-    return selectedHunter;
-  };
+    }
+  });
 
   /*============================================================*/
 
   consoleBtn.addEventListener("click", () => {
     // renderEquipAndInv();
-    addItemsToUL(defaultState);
   });
 
   consoleBtn2.addEventListener("click", () => {
     console.log(defaultState.vaults[hunterIndex]);
-  })
+  });
 
   /*========================================================================*/
-
-  function updateUI(): void {
-    // selectVaultHunter();
-    renderEquipAndInv();
-  }
 }
 main();
