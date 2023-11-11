@@ -38,6 +38,8 @@ type State = {
   level: number;
   scenario: number;
   vaults: VaultData[];
+  // /** Index of current vault */
+  // current: number;
 };
 
 const defaultState: State = {
@@ -45,9 +47,9 @@ const defaultState: State = {
   scenario: 0,
   vaults: [
     {
-      name: "shaun",
-      equippedItems: [{ type: "grenade", name: "boom" }],
-      inventory: [{ type: "grenade", name: "boom" }],
+      name: "",
+      equippedItems: [],
+      inventory: [],
     },
   ],
 };
@@ -138,9 +140,9 @@ function main() {
   function saveState(): void {
     localStorage.setItem("vaultState", JSON.stringify(vaultState));
   }
-  
-  /*=========================================================================*/  
-  
+
+  /*=========================================================================*/
+
   const addInputToVaultState = (
     btn: HTMLButtonElement,
     inputElm: HTMLInputElement,
@@ -151,6 +153,26 @@ function main() {
     let location = vaultState.vaults[hunterIndex]?.[
       (btn.id === "equip-btn") ? "equippedItems" : "inventory"
     ];
+
+    function example() {
+      type MaybeName = { name: string } | undefined;
+      const obj = { name: "shaun" } as MaybeName;
+      const name0 = obj.name;
+      const name1 = obj["name"];
+      const name2 = obj?.name;
+      const name3 = obj?.["name"];
+
+      vaultState.vaults[hunterIndex]?.equippedItems;
+      vaultState.vaults[hunterIndex]?.["equippedItems"];
+
+      const obj = vaultState["vaults"][hunterIndex];
+      if (obj != null) {
+        const key = (btn.id === "equip-btn") ? "equippedItems" : "inventory";
+        return obj[key];
+      } else {
+        return undefined;
+      }
+    }
 
     if (
       ((itemType.includes as (x: unknown) => x is ItemType)(type)) &&
@@ -201,6 +223,9 @@ function main() {
     });
   }
 
+  const disableSelectOptions = (): void => {
+  };
+
   hunterSelect.addEventListener("change", () => {
     for (const btn of vaultBtns) {
       if (btn.value === "true") {
@@ -225,49 +250,125 @@ function main() {
 
   const levelElm = getElementByIdTyped<HTMLParagraphElement>("level");
   const sceneElm = getElementByIdTyped<HTMLParagraphElement>("scenario");
-  const levelDecrease = getElementByIdTyped<HTMLButtonElement>(
+
+  type RepeatedTuple<N extends number, T, Memo extends T[] = []> =
+    number extends N ? T[]
+      : Memo["length"] extends N ? Memo
+      : RepeatedTuple<N, T, [...Memo, T]>;
+
+  // const levelDecrease = getElementByIdTyped<HTMLButtonElement>(
+  //   "level-decrease",
+  // );
+  // const levelIncrease = getElementByIdTyped<HTMLButtonElement>(
+  //   "level-increase",
+  // );
+  // const sceneDecrease = getElementByIdTyped<HTMLButtonElement>(
+  //   "scenario-decrease",
+  // );
+  // const sceneIncrease = getElementByIdTyped<HTMLButtonElement>(
+  //   "scenario-increase",
+  // );
+
+  const [levelDecrease, levelIncrease, sceneDecrease, sceneIncrease] = [
     "level-decrease",
-  );
-  const levelIncrease = getElementByIdTyped<HTMLButtonElement>(
     "level-increase",
-  );
-  const sceneDecrease = getElementByIdTyped<HTMLButtonElement>(
     "scenario-decrease",
-  );
-  const sceneIncrease = getElementByIdTyped<HTMLButtonElement>(
     "scenario-increase",
-  );
+  ].map(
+    (id) => getElementByIdTyped<HTMLButtonElement>(id),
+  ) as RepeatedTuple<4, HTMLButtonElement>;
 
   // Counts for level and scenario.
-  [levelDecrease, levelIncrease, sceneDecrease, sceneIncrease].forEach(
-    (elm) => {
-      elm.addEventListener("click", () => {
-        if (vaultState.level !== 0 && elm === levelDecrease) {
-          vaultState.level--;
-          levelElm.textContent = `Level: ${vaultState.level.toString()}`;
-          saveState();
-        }
-        if (vaultState.level >= 0 && elm === levelIncrease) {
-          vaultState.level++;
-          levelElm.textContent = `Level: ${vaultState.level.toString()}`;
-          saveState();
-        }
-        if (vaultState.scenario !== 0 && elm === sceneDecrease) {
-          vaultState.scenario--;
-          sceneElm.textContent = `Scenario: ${vaultState.scenario.toString()}`;
-          saveState();
-        }
-        if (vaultState.scenario >= 0 && elm === sceneIncrease) {
-          vaultState.scenario++;
-          sceneElm.textContent = `Scenario: ${vaultState.scenario.toString()}`;
-          saveState();
-        }
-      });
-    },
-  );
+  levelDecrease.addEventListener("click", () => {
+    if (vaultState.level !== 0) {
+      vaultState.level--;
+      levelElm.textContent = `Level: ${vaultState.level.toString()}`;
+      saveState();
+    }
+  });
 
-  /*==================== Btns for adding to equipped or inventory ====================*/
-  
+  levelIncrease.addEventListener("click", () => {
+    if (vaultState.level >= 0) {
+      vaultState.level++;
+      levelElm.textContent = `Level: ${vaultState.level.toString()}`;
+      saveState();
+    }
+  });
+
+  sceneDecrease.addEventListener("click", () => {
+    if (vaultState.scenario !== 0) {
+      vaultState.scenario--;
+      sceneElm.textContent = `Scenario: ${vaultState.scenario.toString()}`;
+      saveState();
+    }
+  });
+
+  sceneIncrease.addEventListener("click", () => {
+    if (vaultState.scenario >= 0) {
+      vaultState.scenario++;
+      sceneElm.textContent = `Scenario: ${vaultState.scenario.toString()}`;
+      saveState();
+    }
+  });
+
+  // for (
+  //   const { button, stateKey, amount, element, prefix } of [
+  //     {
+  //       button: levelDecrease,
+  //       stateKey: "level",
+  //       amount: -1,
+  //       element: levelElm,
+  //       prefix: "Level: ",
+  //     },
+  //     {
+  //       button: levelIncrease,
+  //       stateKey: "level",
+  //       amount: 1,
+  //       element: levelElm,
+  //       prefix: "Level: ",
+  //     },
+  //     {
+  //       button: sceneDecrease,
+  //       stateKey: "scenario",
+  //       amount: -1,
+  //       element: sceneElm,
+  //       prefix: "Scenario: ",
+  //     },
+  //     {
+  //       button: sceneIncrease,
+  //       stateKey: "scenario",
+  //       amount: 1,
+  //       element: sceneElm,
+  //       prefix: "Scenario: ",
+  //     },
+  //   ] satisfies ReadonlyArray<{
+  //     button: HTMLButtonElement;
+  //     stateKey: "level" | "scenario";
+  //     amount: 1 | -1;
+  //     element: HTMLElement;
+  //     prefix: string;
+  //   }>
+  // ) {
+  //   const callback = amount > 0
+  //     ? () => {
+  //       if (vaultState[stateKey] >= 0) {
+  //         vaultState[stateKey] += amount;
+  //         element.textContent = `${prefix}${vaultState[stateKey].toString()}`;
+  //         saveState();
+  //       }
+  //     }
+  //     : () => {
+  //       if (vaultState[stateKey] !== 0) {
+  //         vaultState[stateKey] += amount;
+  //         element.textContent = `${prefix}${vaultState[stateKey].toString()}`;
+  //         saveState();
+  //       }
+  //     };
+  //   button.addEventListener("click", callback);
+  // }
+
+  /*====================== Equipped or inventory btns ======================*/
+
   const gearBtns = document.querySelectorAll<HTMLButtonElement>(".add-gear");
   const input = getElementByIdTyped<HTMLInputElement>("item-input");
   // Determines what array input should be pushed to, ...equippedItems or ...inventory
