@@ -35,14 +35,14 @@ type VaultData = {
 };
 
 type State = {
+  currentIndex: number;
   level: number;
   scenario: number;
   vaults: VaultData[];
-  // /** Index of current vault */
-  // current: number;
 };
 
 const defaultState: State = {
+  currentIndex: 0,
   level: 0,
   scenario: 0,
   vaults: [
@@ -54,11 +54,9 @@ const defaultState: State = {
   ],
 };
 
-function addItemsToUL(data: State, index: number): void {
-  const vault = data.vaults[index];
-
-  if (vault !== undefined) {
-    for (const item of vault.equippedItems) {
+function addItemsToUL(data: VaultData): void {
+  if (data !== undefined) {
+    for (const item of data.equippedItems) {
       const ul = getElementByIdTyped<HTMLUListElement>(`equip-${item.type}-ul`);
       ul.dataset.type = item.type;
       let newLI = document.createElement("li");
@@ -67,7 +65,7 @@ function addItemsToUL(data: State, index: number): void {
       ul.append(newLI);
     }
 
-    for (const item of vault.inventory) {
+    for (const item of data.inventory) {
       const ul = getElementByIdTyped<HTMLUListElement>(`inv-${item.type}-ul`);
       ul.dataset.type = item.type;
       let newLI = document.createElement("li");
@@ -78,7 +76,7 @@ function addItemsToUL(data: State, index: number): void {
   }
 }
 
-function addRemoveBtn(element: HTMLLIElement, data: State): void {
+function addRemoveBtn(element: HTMLLIElement, data: VaultData): void {
   const removeBtn = document.createElement("button");
   removeBtn.textContent = "remove";
   removeBtn.id = "remove-btn";
@@ -92,7 +90,7 @@ function addRemoveBtn(element: HTMLLIElement, data: State): void {
 function deleteItemFromStateAndDOM(
   btnElm: HTMLButtonElement,
   elmToRemove: HTMLLIElement,
-  data: State,
+  data: VaultData,
 ): void {
   const equipCon = getElementByIdTyped<HTMLDivElement>("equip-con");
 
@@ -100,7 +98,7 @@ function deleteItemFromStateAndDOM(
   const itemType = btnElm.parentElement?.parentElement?.dataset.type;
   const itemName = btnElm.parentElement?.firstChild?.textContent;
 
-  let location = data.vaults[hunterIndex]?.[
+  let location = data?.[
     (equipCon.id === containingDiv?.id) ? "equippedItems" : "inventory"
   ];
 
@@ -115,13 +113,13 @@ function deleteItemFromStateAndDOM(
   elmToRemove.remove();
 }
 
-function updateUI(data: State, index: number): void {
+function updateUI(data: VaultData): void {
   // selectVaultHunter();
   renderEquipAndInv();
-  addItemsToUL(data, index);
+  addItemsToUL(data);
 }
 
-let hunterIndex: number = 0;
+let hunterIndex: number;
 
 //*================================ MAIN ================================*/
 
@@ -141,6 +139,8 @@ function main() {
     localStorage.setItem("vaultState", JSON.stringify(vaultState));
   }
 
+  updateUI(vaultState.vaults[vaultState.currentIndex]!);
+
   /*=========================================================================*/
 
   const addInputToVaultState = (
@@ -150,29 +150,9 @@ function main() {
     let typeElm = getElementByIdTyped<HTMLSelectElement>("item-type");
     let type = typeElm.value;
     let name = inputElm.value;
-    let location = vaultState.vaults[hunterIndex]?.[
+    let location = vaultState.vaults[vaultState.currentIndex]?.[
       (btn.id === "equip-btn") ? "equippedItems" : "inventory"
     ];
-
-    function example() {
-      type MaybeName = { name: string } | undefined;
-      const obj = { name: "shaun" } as MaybeName;
-      const name0 = obj.name;
-      const name1 = obj["name"];
-      const name2 = obj?.name;
-      const name3 = obj?.["name"];
-
-      vaultState.vaults[hunterIndex]?.equippedItems;
-      vaultState.vaults[hunterIndex]?.["equippedItems"];
-
-      const obj = vaultState["vaults"][hunterIndex];
-      if (obj != null) {
-        const key = (btn.id === "equip-btn") ? "equippedItems" : "inventory";
-        return obj[key];
-      } else {
-        return undefined;
-      }
-    }
 
     if (
       ((itemType.includes as (x: unknown) => x is ItemType)(type)) &&
@@ -208,11 +188,15 @@ function main() {
     button.dataset.index = index.toString();
 
     button.addEventListener("click", function () {
-      hunterIndex = parseInt(button.dataset.index!);
+      // hunterIndex = parseInt(button.dataset.index!);
+      vaultState.currentIndex = parseInt(button.dataset.index!);
       button.classList.add("selected");
       button.value = "true";
+
       enableActionElements(button);
-      updateUI(vaultState, hunterIndex);
+
+      let vault = vaultState.vaults[vaultState.currentIndex];
+      if (vault) updateUI(vault);
 
       for (const btn of vaultBtns) {
         if (btn !== button) {
@@ -235,7 +219,7 @@ function main() {
         btn.textContent = selectedHunter;
 
         if (vaultState.vaults) {
-          vaultState.vaults[hunterIndex] = {
+          vaultState.vaults[vaultState.currentIndex] = {
             name: selectedHunter,
             equippedItems: [],
             inventory: [],
@@ -251,32 +235,18 @@ function main() {
   const levelElm = getElementByIdTyped<HTMLParagraphElement>("level");
   const sceneElm = getElementByIdTyped<HTMLParagraphElement>("scenario");
 
-  type RepeatedTuple<N extends number, T, Memo extends T[] = []> =
-    number extends N ? T[]
-      : Memo["length"] extends N ? Memo
-      : RepeatedTuple<N, T, [...Memo, T]>;
-
-  // const levelDecrease = getElementByIdTyped<HTMLButtonElement>(
-  //   "level-decrease",
-  // );
-  // const levelIncrease = getElementByIdTyped<HTMLButtonElement>(
-  //   "level-increase",
-  // );
-  // const sceneDecrease = getElementByIdTyped<HTMLButtonElement>(
-  //   "scenario-decrease",
-  // );
-  // const sceneIncrease = getElementByIdTyped<HTMLButtonElement>(
-  //   "scenario-increase",
-  // );
-
-  const [levelDecrease, levelIncrease, sceneDecrease, sceneIncrease] = [
+  const levelDecrease = getElementByIdTyped<HTMLButtonElement>(
     "level-decrease",
+  );
+  const levelIncrease = getElementByIdTyped<HTMLButtonElement>(
     "level-increase",
+  );
+  const sceneDecrease = getElementByIdTyped<HTMLButtonElement>(
     "scenario-decrease",
+  );
+  const sceneIncrease = getElementByIdTyped<HTMLButtonElement>(
     "scenario-increase",
-  ].map(
-    (id) => getElementByIdTyped<HTMLButtonElement>(id),
-  ) as RepeatedTuple<4, HTMLButtonElement>;
+  );
 
   // Counts for level and scenario.
   levelDecrease.addEventListener("click", () => {
@@ -311,62 +281,6 @@ function main() {
     }
   });
 
-  // for (
-  //   const { button, stateKey, amount, element, prefix } of [
-  //     {
-  //       button: levelDecrease,
-  //       stateKey: "level",
-  //       amount: -1,
-  //       element: levelElm,
-  //       prefix: "Level: ",
-  //     },
-  //     {
-  //       button: levelIncrease,
-  //       stateKey: "level",
-  //       amount: 1,
-  //       element: levelElm,
-  //       prefix: "Level: ",
-  //     },
-  //     {
-  //       button: sceneDecrease,
-  //       stateKey: "scenario",
-  //       amount: -1,
-  //       element: sceneElm,
-  //       prefix: "Scenario: ",
-  //     },
-  //     {
-  //       button: sceneIncrease,
-  //       stateKey: "scenario",
-  //       amount: 1,
-  //       element: sceneElm,
-  //       prefix: "Scenario: ",
-  //     },
-  //   ] satisfies ReadonlyArray<{
-  //     button: HTMLButtonElement;
-  //     stateKey: "level" | "scenario";
-  //     amount: 1 | -1;
-  //     element: HTMLElement;
-  //     prefix: string;
-  //   }>
-  // ) {
-  //   const callback = amount > 0
-  //     ? () => {
-  //       if (vaultState[stateKey] >= 0) {
-  //         vaultState[stateKey] += amount;
-  //         element.textContent = `${prefix}${vaultState[stateKey].toString()}`;
-  //         saveState();
-  //       }
-  //     }
-  //     : () => {
-  //       if (vaultState[stateKey] !== 0) {
-  //         vaultState[stateKey] += amount;
-  //         element.textContent = `${prefix}${vaultState[stateKey].toString()}`;
-  //         saveState();
-  //       }
-  //     };
-  //   button.addEventListener("click", callback);
-  // }
-
   /*====================== Equipped or inventory btns ======================*/
 
   const gearBtns = document.querySelectorAll<HTMLButtonElement>(".add-gear");
@@ -375,7 +289,8 @@ function main() {
   for (const btn of gearBtns) {
     btn.addEventListener("click", () => {
       addInputToVaultState(btn, input);
-      updateUI(vaultState, hunterIndex);
+      let vault = vaultState.vaults[vaultState.currentIndex];
+      if (vault) updateUI(vault);
     });
   }
 
@@ -386,7 +301,7 @@ function main() {
   });
 
   consoleBtn2.addEventListener("click", () => {
-    console.log(vaultState.vaults[hunterIndex]);
+    console.log(vaultState.currentIndex);
   });
 
   /*=============================================*/
