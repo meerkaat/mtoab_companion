@@ -47,7 +47,7 @@ const defaultState: State = {
   scenario: 0,
   vaults: [
     {
-      name: "",
+      name: "(empty)",
       equippedItems: [],
       inventory: [],
     },
@@ -113,10 +113,22 @@ function deleteItemFromStateAndDOM(
   elmToRemove.remove();
 }
 
-function updateUI(data: VaultData): void {
+function updateUI(data: State, index: number): void {
   // selectVaultHunter();
+  const vaultButtons = [
+    ...document.querySelectorAll<HTMLButtonElement>(".vault"),
+  ];
+
+  for (const [i, btn] of vaultButtons.entries()) {
+    let vaultData = data.vaults[i];
+    if (vaultData?.name !== undefined) {
+      btn.textContent = vaultData?.name;
+    }
+  }
+
   renderEquipAndInv();
-  addItemsToUL(data);
+  let vault = data.vaults[index];
+  if (vault) addItemsToUL(vault);
 }
 
 let hunterIndex: number;
@@ -139,7 +151,7 @@ function main() {
     localStorage.setItem("vaultState", JSON.stringify(vaultState));
   }
 
-  updateUI(vaultState.vaults[vaultState.currentIndex]!);
+  updateUI(vaultState, vaultState.currentIndex);
 
   /*=========================================================================*/
 
@@ -194,9 +206,7 @@ function main() {
       button.value = "true";
 
       enableActionElements(button);
-
-      let vault = vaultState.vaults[vaultState.currentIndex];
-      if (vault) updateUI(vault);
+      updateUI(vaultState, vaultState.currentIndex);
 
       for (const btn of vaultBtns) {
         if (btn !== button) {
@@ -289,8 +299,7 @@ function main() {
   for (const btn of gearBtns) {
     btn.addEventListener("click", () => {
       addInputToVaultState(btn, input);
-      let vault = vaultState.vaults[vaultState.currentIndex];
-      if (vault) updateUI(vault);
+      updateUI(vaultState, vaultState.currentIndex);
     });
   }
 
