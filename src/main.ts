@@ -113,29 +113,36 @@ function deleteItemFromStateAndDOM(
   elmToRemove.remove();
 }
 
-function updateUI(data: State, index: number): void {
-  // selectVaultHunter();
-  const vaultButtons = [
-    ...document.querySelectorAll<HTMLButtonElement>(".vault"),
-  ];
-
-  for (const [i, btn] of vaultButtons.entries()) {
-    let vaultData = data.vaults[i];
-    if (vaultData?.name !== undefined) {
-      btn.textContent = vaultData?.name;
-    }
-  }
-
-  renderEquipAndInv();
-  let vault = data.vaults[index];
-  if (vault) addItemsToUL(vault);
-}
-
-let hunterIndex: number;
-
 //*================================ MAIN ================================*/
 
 function main() {
+  const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
+  const levelElm = getElementByIdTyped<HTMLParagraphElement>("level");
+  const sceneElm = getElementByIdTyped<HTMLParagraphElement>("scenario");
+
+  const updateVaultBtnName = (data: State): void => {
+    for (const [i, btn] of vaultBtns.entries()) {
+      let vaultData = data.vaults[i];
+      if (vaultData?.name !== undefined) {
+        btn.textContent = vaultData?.name;
+      }
+    }
+  };
+
+  const updateLevelAndSceneCounter = (data: State): void => {
+    levelElm.textContent = `Level: ${data.level.toString()}`;
+    sceneElm.textContent = `Scenario: ${data.scenario.toString()}`;
+  };
+
+  const updateUI = (data: State, index: number): void => {
+    // selectVaultHunter();
+    updateVaultBtnName(data);
+    updateLevelAndSceneCounter(data);
+    renderEquipAndInv();
+    let vault = data.vaults[index];
+    if (vault) addItemsToUL(vault);
+  };
+
   /*============================ temp helper btns ===========================*/
   const consoleBtn = getElementByIdTyped<HTMLButtonElement>("console");
   const consoleBtn2 = getElementByIdTyped<HTMLButtonElement>("console2");
@@ -188,11 +195,8 @@ function main() {
   };
 
   /*========================== Hunter/Vault Selection ==========================*/
-
-  // let hunterIndex: number = 0;
   let listOfSelectHunters = new Set();
   const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
-  const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
 
   // Toggles buttons so only one is active at a time.
   // The active button is the selected vault button.
@@ -241,9 +245,6 @@ function main() {
   });
 
   /*======================== Level/Scenario Counters ========================*/
-
-  const levelElm = getElementByIdTyped<HTMLParagraphElement>("level");
-  const sceneElm = getElementByIdTyped<HTMLParagraphElement>("scenario");
 
   const levelDecrease = getElementByIdTyped<HTMLButtonElement>(
     "level-decrease",
@@ -304,7 +305,6 @@ function main() {
   }
 
   /*=============================================*/
-
   consoleBtn.addEventListener("click", () => {
     // renderEquipAndInv();
   });
@@ -312,7 +312,6 @@ function main() {
   consoleBtn2.addEventListener("click", () => {
     console.log(vaultState.currentIndex);
   });
-
   /*=============================================*/
 }
 main();
