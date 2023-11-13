@@ -113,19 +113,46 @@ function deleteItemFromStateAndDOM(
   elmToRemove.remove();
 }
 
-//*================================ MAIN ================================*/
+//*============================================================================
+//*                                   MAIN
+//*============================================================================
 
 function main() {
+  /*============================ temp helper btns ===========================*/
+
+  const consoleBtn = getElementByIdTyped<HTMLButtonElement>("console");
+  const consoleBtn2 = getElementByIdTyped<HTMLButtonElement>("console2");
+  const clearStore = getElementByIdTyped<HTMLButtonElement>("clear-storage");
+  clearStore.addEventListener("click", () => localStorage.clear());
+
+  /*=========================================================================*/
+
+  const vaultState: State = JSON.parse(localStorage.getItem("vaultState")!) ||
+    defaultState;
+  // const vaultState: State = defaultState;
+
+  const saveState = (): void => {
+    localStorage.setItem("vaultState", JSON.stringify(vaultState));
+  };
+
+  /*========================================================================*/
+
   const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
   const levelElm = getElementByIdTyped<HTMLParagraphElement>("level");
   const sceneElm = getElementByIdTyped<HTMLParagraphElement>("scenario");
 
+  const displayImage = (hunter: string): void => {
+    let hunterImage = document.getElementsByTagName("img")[0];
+    if (hunterImage) hunterImage.src = `/assets/${hunter}.jpg`;
+  };
+
   const updateVaultBtnName = (data: State): void => {
     for (const [i, btn] of vaultBtns.entries()) {
-      let vaultData = data.vaults[i];
-      if (vaultData?.name !== undefined) {
-        btn.textContent = vaultData?.name;
+      let vault = data.vaults[i];
+      if (vault?.name !== undefined) {
+        btn.textContent = vault?.name;
       }
+
     }
   };
 
@@ -136,31 +163,20 @@ function main() {
 
   const updateUI = (data: State, index: number): void => {
     // selectVaultHunter();
+    let vault = data.vaults[index];
+    if (vault?.name) displayImage(vault?.name);
     updateVaultBtnName(data);
     updateLevelAndSceneCounter(data);
     renderEquipAndInv();
-    let vault = data.vaults[index];
     if (vault) addItemsToUL(vault);
   };
 
-  /*============================ temp helper btns ===========================*/
-  const consoleBtn = getElementByIdTyped<HTMLButtonElement>("console");
-  const consoleBtn2 = getElementByIdTyped<HTMLButtonElement>("console2");
-  const clearStore = getElementByIdTyped<HTMLButtonElement>("clear-storage");
-  clearStore.addEventListener("click", () => localStorage.clear());
-  /*=========================================================================*/
-
-  const vaultState: State = JSON.parse(localStorage.getItem("vaultState")!) ||
-    defaultState;
-  // const vaultState: State = defaultState;
-
-  function saveState(): void {
-    localStorage.setItem("vaultState", JSON.stringify(vaultState));
-  }
-
+  /*================== Init UI =================*/
+  
+  vaultState.currentIndex = 0;
   updateUI(vaultState, vaultState.currentIndex);
 
-  /*=========================================================================*/
+  /*=============================================*/
 
   const addInputToVaultState = (
     btn: HTMLButtonElement,
@@ -225,6 +241,11 @@ function main() {
   };
 
   hunterSelect.addEventListener("change", () => {
+    let selected = hunterSelect.options[hunterSelect.selectedIndex]
+      ?.value;
+
+    if (selected) displayImage(selected);
+
     for (const btn of vaultBtns) {
       if (btn.value === "true") {
         let selectedHunter = hunterSelect.options[hunterSelect.selectedIndex]
@@ -294,8 +315,8 @@ function main() {
 
   /*====================== Equipped or inventory btns ======================*/
 
-  const gearBtns = document.querySelectorAll<HTMLButtonElement>(".add-gear");
   const input = getElementByIdTyped<HTMLInputElement>("item-input");
+  const gearBtns = document.querySelectorAll<HTMLButtonElement>(".add-gear");
   // Determines what array input should be pushed to, ...equippedItems or ...inventory
   for (const btn of gearBtns) {
     btn.addEventListener("click", () => {
