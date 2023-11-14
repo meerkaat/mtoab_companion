@@ -140,10 +140,14 @@ function main() {
   const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
   const levelElm = getElementByIdTyped<HTMLParagraphElement>("level");
   const sceneElm = getElementByIdTyped<HTMLParagraphElement>("scenario");
+  const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
 
   const displayImage = (hunter: string): void => {
-    let hunterImage = document.getElementsByTagName("img")[0];
-    if (hunterImage) hunterImage.src = `/assets/${hunter}.jpg`;
+    hunter = hunter.replace(/\s+/g, "").toLowerCase();
+    let newName = hunter.replace(/\.+/g, "");
+    let img = document.getElementsByTagName("img")[0];
+
+    if (img) img.src = `/assets/${newName}.jpg`;
   };
 
   const updateVaultBtnName = (data: State): void => {
@@ -152,7 +156,6 @@ function main() {
       if (vault?.name !== undefined) {
         btn.textContent = vault?.name;
       }
-
     }
   };
 
@@ -172,7 +175,7 @@ function main() {
   };
 
   /*================== Init UI =================*/
-  
+
   vaultState.currentIndex = 0;
   updateUI(vaultState, vaultState.currentIndex);
 
@@ -212,7 +215,6 @@ function main() {
 
   /*========================== Hunter/Vault Selection ==========================*/
   let listOfSelectHunters = new Set();
-  const hunterSelect = getElementByIdTyped<HTMLSelectElement>("char-select");
 
   // Toggles buttons so only one is active at a time.
   // The active button is the selected vault button.
@@ -242,7 +244,7 @@ function main() {
 
   hunterSelect.addEventListener("change", () => {
     let selected = hunterSelect.options[hunterSelect.selectedIndex]
-      ?.value;
+      ?.textContent;
 
     if (selected) displayImage(selected);
 
