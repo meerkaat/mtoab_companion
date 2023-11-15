@@ -1,7 +1,3 @@
-// I have no idea how the Borderlands inventory works
-// so I'm not sure what these data structures should look like…
-// 🔥🔥🔥🔥🔥🔥🚿🚒 *Me dealing with the heat*
-
 import { renderEquipAndInv } from "./template.js";
 import { assert, getElementByIdTyped } from "./utilities.js";
 
@@ -179,42 +175,16 @@ function main() {
   vaultState.currentIndex = 0;
   updateUI(vaultState, vaultState.currentIndex);
 
-  /*=============================================*/
+  /*========================== Hunter/Vault Selection ==========================*/
 
-  const addInputToVaultState = (
-    btn: HTMLButtonElement,
-    inputElm: HTMLInputElement,
-  ): void => {
-    let typeElm = getElementByIdTyped<HTMLSelectElement>("item-type");
-    let type = typeElm.value;
-    let name = inputElm.value;
-    let location = vaultState.vaults[vaultState.currentIndex]?.[
-      (btn.id === "equip-btn") ? "equippedItems" : "inventory"
-    ];
-
-    if (
-      ((itemType.includes as (x: unknown) => x is ItemType)(type)) &&
-      (name !== undefined && name)
-    ) {
-      location?.push({
-        type,
-        name,
-      });
-      saveState();
-      input.value = "";
-    }
-  };
-
-  const elmToEnable = [...document.querySelectorAll<HTMLElement>(".toggle")];
+  const elmsToEnable = [...document.querySelectorAll<HTMLElement>(".toggle")];
+  let listOfSelectHunters = new Set();
 
   const enableActionElements = (btn: HTMLButtonElement): void => {
-    for (const elm of elmToEnable) {
+    for (const elm of elmsToEnable) {
       elm.removeAttribute("disabled");
     }
   };
-
-  /*========================== Hunter/Vault Selection ==========================*/
-  let listOfSelectHunters = new Set();
 
   // Toggles buttons so only one is active at a time.
   // The active button is the selected vault button.
@@ -316,6 +286,30 @@ function main() {
   });
 
   /*====================== Equipped or inventory btns ======================*/
+
+  const addInputToVaultState = (
+    btn: HTMLButtonElement,
+    inputElm: HTMLInputElement,
+  ): void => {
+    let typeElm = getElementByIdTyped<HTMLSelectElement>("item-type");
+    let type = typeElm.value;
+    let name = inputElm.value;
+    let location = vaultState.vaults[vaultState.currentIndex]?.[
+      (btn.id === "equip-btn") ? "equippedItems" : "inventory"
+    ];
+
+    if (
+      ((itemType.includes as (x: unknown) => x is ItemType)(type)) &&
+      (name !== undefined && name)
+    ) {
+      location?.push({
+        type,
+        name,
+      });
+      saveState();
+      input.value = "";
+    }
+  };
 
   const input = getElementByIdTyped<HTMLInputElement>("item-input");
   const gearBtns = document.querySelectorAll<HTMLButtonElement>(".add-gear");

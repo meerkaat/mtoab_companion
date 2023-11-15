@@ -11,9 +11,24 @@
 </head>
 
 <body>
-  <button id="console">console.log</button>
-  <button id="console2">console.log2</button>
-  <button id="clear-storage">Clear Storage</button>
+  <div>
+    <button id="console">console.log</button>
+    <button id="console2">console.log2</button>
+    <button id="clear-storage">Clear Storage</button>
+  </div>
+
+  <div class="counter">
+    <div>
+      <h3 id="level">Level: <span id="level-num">0</span></h3>
+      <button id="level-decrease" class="toggle counter-btn" disabled="true">-</button>
+      <button id="level-increase" class="toggle counter-btn" disabled="true">+</button>
+    </div>
+    <div>
+      <h3 id="scenario">Scenario: <span id="scene-num">0</span></h3>
+      <button id="scenario-decrease" class="toggle counter-btn" disabled="true">-</button>
+      <button id="scenario-increase" class="toggle counter-btn" disabled="true">+</button>
+    </div>
+  </div>
 
   <div class="btn-con">
     <button class="vault" id="vault0" value="false">(empty)</button>
@@ -22,60 +37,60 @@
     <button class="vault" id="vault3" value="false">(empty)</button>
   </div>
 
-  <div id="hunter-selection">
+  <div class="container">
+    <div id="hunter-selection">
 
-    <img>
+      <img>
 
-    <select id="char-select" class="toggle" disabled="true" autocomplete="off">
-      <option selected="true" hidden="true">Select Vault Hunter</option>
-      <option>Amara</option>
-      <option>Athena</option>
-      <option>Aurelia</option>
-      <option>Axton</option>
-      <option>Brick</option>
-      <option>Cl4ptp</option>
-      <option>Fl4k</option>
-      <option>Gaige</option>
-      <option>Krieg</option>
-      <option>Lilith</option>
-      <option>Maya</option>
-      <option>Mordecai</option>
-      <option>Moze</option>
-      <option>Mr. Torgue</option>
-      <option>Nisha</option>
-      <option>Roland</option>
-      <option>Salvador</option>
-      <option>Timothy Lawrence</option>
-      <option>Tiny Tina</option>
-      <option>Wilhelm</option>
-      <option>Zane</option>
-      <option>Zer0</option>
-    </select>
-
-  </div>
-
-  <p id="level">Level: <span id="level-num">0</span></p>
-  <button id="level-decrease" class="toggle" disabled="true">-</button>
-  <button id="level-increase" class="toggle" disabled="true">+</button>
-  <p id="scenario">Scenario: <span id="scene-num">0</span></p>
-  <button id="scenario-decrease" class="toggle" disabled="true">-</button>
-  <button id="scenario-increase" class="toggle" disabled="true">+</button>
-
-  <div id="gear-input">
-    <label for="item-input">
-      <select id="item-type" class="toggle" disabled="true" autocomplete="off">
-        <option value="weapon">Weapon</option>
-        <option value="grenade">Grenade</option>
-        <option value="shield">Shield</option>
-        <option value="misc">Misc</option>
+      <select id="char-select" class="toggle" disabled="true" autocomplete="off">
+        <option selected="true" hidden="true">Select Hunter</option>
+        <option>Amara</option>
+        <option>Athena</option>
+        <option>Aurelia</option>
+        <option>Axton</option>
+        <option>Brick</option>
+        <option>Cl4ptp</option>
+        <option>Fl4k</option>
+        <option>Gaige</option>
+        <option>Krieg</option>
+        <option>Lilith</option>
+        <option>Maya</option>
+        <option>Mordecai</option>
+        <option>Moze</option>
+        <option>Mr. Torgue</option>
+        <option>Nisha</option>
+        <option>Roland</option>
+        <option>Salvador</option>
+        <option>Timothy</option>
+        <option>Tiny Tina</option>
+        <option>Wilhelm</option>
+        <option>Zane</option>
+        <option>Zer0</option>
       </select>
-    </label>
-    <input type="text" id="item-input" class="toggle" disabled="true" placeholder="Input Gear">
-    <button id="equip-btn" class="toggle add-gear" disabled="true">Equip</button>
-    <button id="inv-btn" class="toggle add-gear" disabled="true">Inventory</button>
-  </div>
 
-  <div id="main">
+    </div>
+
+    <div id="gear-input">
+
+      <label for="item-input">
+        <select id="item-type" class="toggle" disabled="true" autocomplete="off">
+          <option value="weapon">Weapon</option>
+          <option value="grenade">Grenade</option>
+          <option value="shield">Shield</option>
+          <option value="misc">Misc</option>
+        </select>
+      </label>
+      <input type="text" id="item-input" class="toggle" disabled="true" placeholder="Input Gear">
+      <div class="gear-con">
+        <button id="equip-btn" class="toggle add-gear" disabled="true">Equip</button>
+        <button id="inv-btn" class="toggle add-gear" disabled="true">Inventory</button>
+      </div>
+
+    </div>
+
+    <div id="main">
+    </div>
+
   </div>
 
   <!-- <div id="equip-con"> 
