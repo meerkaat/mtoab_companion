@@ -5,7 +5,7 @@ export function renderEquipAndInv(): void {
 
   const html = `
   <div id="equip-con">
-    <h2>Equipped Gear</h2>
+    <h2 class="headers">Equipped Gear</h2>
     <h3 id="weapon">Weapons</h3>
     <ul id="equip-weapon-ul">
     </ul>
@@ -21,7 +21,7 @@ export function renderEquipAndInv(): void {
   </div>
 
   <div id="inventory-con">
-    <h2>Inventory</h2>
+    <h2 class="headers">Inventory</h2>
     <h3 class="inventory" id="weapon-inv">Weapons</h3>
     <ul id="inv-weapon-ul">
     </ul>

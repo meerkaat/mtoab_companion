@@ -186,6 +186,13 @@ function main() {
     }
   };
 
+  // const resetSelectOption = (btn: HTMLButtonElement):void => {
+  //   if (btn.textContent === "(empty)") {
+  //     hunterSelect.selectedIndex = 0;
+  //   } else hunterSelect.selectedIndex = ;
+
+  // }
+
   // Toggles buttons so only one is active at a time.
   // The active button is the selected vault button.
   for (let [index, button] of vaultBtns.entries()) {
@@ -197,6 +204,7 @@ function main() {
       button.classList.add("selected");
       button.value = "true";
 
+      // resetSelectOption(button);
       enableActionElements(button);
       updateUI(vaultState, vaultState.currentIndex);
 

@@ -4,6 +4,10 @@ html {
   background-color: grey;
 }
 
+.console {
+  display: none
+}
+
 .counter {
   display: flex;
   justify-content: center;
@@ -22,17 +26,19 @@ html {
   display: flex;
   justify-content: center;
   gap: 0.5rem;
+  margin-bottom: 1%;
 }
 
 .container {
   display: grid;
   grid-template-columns: 1fr;
-  margin: 1% 2% 0 2%;
+  margin-top: 0.5rem;
 }
 
 #hunter-selection {
   display: grid;
   justify-content: center;
+  margin-bottom: 1%;
 }
 
 #char-select {
@@ -44,6 +50,7 @@ html {
 #gear-input {
   display: grid;
   grid-template-columns: 1fr 3fr;
+  margin: 0 2% 1% 2%;
 }
 
 #gear-input  select {
@@ -61,18 +68,23 @@ html {
   width: 100%;
 }
 
-#equip-con {
-  outline: 2px solid blue;
-}
-
-#inventory-con {
-  outline: 2px solid green;
-}
-
-p {
-  font-weight: bold;
-}
-
 .selected {
   background: turquoise;
+}
+
+img {
+  border-radius: 5%;
+}
+
+#main h2 {
+  background-color: rgba(0, 4, 252, 0.493);
+  text-align: center;
+}
+
+#main h3 {
+  margin: 0 2% 0 2%;
+}
+
+@media (min-width: 900px) {
+  
 }

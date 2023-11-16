@@ -12,21 +12,23 @@
 
 <body>
   <div>
-    <button id="console">console.log</button>
-    <button id="console2">console.log2</button>
+    <button class="console" id="console">console.log</button>
+    <button class="console" id="console2">console.log2</button>
     <button id="clear-storage">Clear Storage</button>
   </div>
 
+  <div class="container">
+  
   <div class="counter">
     <div>
       <h3 id="level">Level: <span id="level-num">0</span></h3>
-      <button id="level-decrease" class="toggle counter-btn" disabled="true">-</button>
-      <button id="level-increase" class="toggle counter-btn" disabled="true">+</button>
+      <button id="level-decrease" class="toggle counter-btn" disabled="true" autocomplete="off">-</button>
+      <button id="level-increase" class="toggle counter-btn" disabled="true" autocomplete="off">+</button>
     </div>
     <div>
       <h3 id="scenario">Scenario: <span id="scene-num">0</span></h3>
-      <button id="scenario-decrease" class="toggle counter-btn" disabled="true">-</button>
-      <button id="scenario-increase" class="toggle counter-btn" disabled="true">+</button>
+      <button id="scenario-decrease" class="toggle counter-btn" disabled="true" autocomplete="off">-</button>
+      <button id="scenario-increase" class="toggle counter-btn" disabled="true" autocomplete="off">+</button>
     </div>
   </div>
 
@@ -37,7 +39,6 @@
     <button class="vault" id="vault3" value="false">(empty)</button>
   </div>
 
-  <div class="container">
     <div id="hunter-selection">
 
       <img>
@@ -80,10 +81,10 @@
           <option value="misc">Misc</option>
         </select>
       </label>
-      <input type="text" id="item-input" class="toggle" disabled="true" placeholder="Input Gear">
+      <input type="text" id="item-input" class="toggle" disabled="true" placeholder="Input Gear" autocomplete="off">
       <div class="gear-con">
-        <button id="equip-btn" class="toggle add-gear" disabled="true">Equip</button>
-        <button id="inv-btn" class="toggle add-gear" disabled="true">Inventory</button>
+        <button id="equip-btn" class="toggle add-gear" disabled="true" autocomplete="off">Equip</button>
+        <button id="inv-btn" class="toggle add-gear" disabled="true" autocomplete="off">Inventory</button>
       </div>
 
     </div>
