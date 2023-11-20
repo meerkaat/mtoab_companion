@@ -17,87 +17,85 @@
     <button id="clear-storage">Clear Storage</button>
   </div>
 
-  <div class="container">
 
-    <div class="counter">
-      <div>
-        <h3 id="level">Level: <span id="level-num">0</span></h3>
-        <button id="level-decrease" class="toggle counter-btn" disabled="true" autocomplete="off">-</button>
-        <button id="level-increase" class="toggle counter-btn" disabled="true" autocomplete="off">+</button>
-      </div>
-      <div>
-        <h3 id="scenario">Scenario: <span id="scene-num">0</span></h3>
-        <button id="scenario-decrease" class="toggle counter-btn" disabled="true" autocomplete="off">-</button>
-        <button id="scenario-increase" class="toggle counter-btn" disabled="true" autocomplete="off">+</button>
-      </div>
+
+  <div class="counters">
+    <div class="level-counter">
+      <h3 id="level">Level: <span id="level-num">0</span></h3>
+      <button id="level-decrease" class="toggle counter-btn" disabled="true" autocomplete="off">-</button>
+      <button id="level-increase" class="toggle counter-btn" disabled="true" autocomplete="off">+</button>
     </div>
-
-    <div class="btn-con">
-      <button class="vault" id="vault0" value="false">(empty)</button>
-      <button class="vault" id="vault1" value="false">(empty)</button>
-      <button class="vault" id="vault2" value="false">(empty)</button>
-      <button class="vault" id="vault3" value="false">(empty)</button>
+    <div class="scenario-counter">
+      <h3 id="scenario">Scenario: <span id="scene-num">0</span></h3>
+      <button id="scenario-decrease" class="toggle counter-btn" disabled="true" autocomplete="off">-</button>
+      <button id="scenario-increase" class="toggle counter-btn" disabled="true" autocomplete="off">+</button>
     </div>
+  </div>
 
-    <div id="character-con">
+  <div class="btn-con">
+    <button class="vault" id="vault0" value="false">(empty)</button>
+    <button class="vault" id="vault1" value="false">(empty)</button>
+    <button class="vault" id="vault2" value="false">(empty)</button>
+    <button class="vault" id="vault3" value="false">(empty)</button>
+  </div>
 
-      <div id="hunter-selection">
+  <div id="character-con">
+
+    <div id="hunter-selection">
 
 
-        <select id="char-select" class="toggle" disabled="true" autocomplete="off">
-          <option selected="true" hidden="true">Select Hunter</option>
-          <option>Amara</option>
-          <option>Athena</option>
-          <option>Aurelia</option>
-          <option>Axton</option>
-          <option>Brick</option>
-          <option>Cl4ptp</option>
-          <option>Fl4k</option>
-          <option>Gaige</option>
-          <option>Krieg</option>
-          <option>Lilith</option>
-          <option>Maya</option>
-          <option>Mordecai</option>
-          <option>Moze</option>
-          <option>Mr. Torgue</option>
-          <option>Nisha</option>
-          <option>Roland</option>
-          <option>Salvador</option>
-          <option>Timothy</option>
-          <option>Tiny Tina</option>
-          <option>Wilhelm</option>
-          <option>Zane</option>
-          <option>Zer0</option>
-        </select>
+      <select id="char-select" class="toggle" disabled="true" autocomplete="off">
+        <option selected="true" hidden="true">Select Hunter</option>
+        <option>Amara</option>
+        <option>Athena</option>
+        <option>Aurelia</option>
+        <option>Axton</option>
+        <option>Brick</option>
+        <option>Cl4ptp</option>
+        <option>Fl4k</option>
+        <option>Gaige</option>
+        <option>Krieg</option>
+        <option>Lilith</option>
+        <option>Maya</option>
+        <option>Mordecai</option>
+        <option>Moze</option>
+        <option>Mr. Torgue</option>
+        <option>Nisha</option>
+        <option>Roland</option>
+        <option>Salvador</option>
+        <option>Timothy</option>
+        <option>Tiny Tina</option>
+        <option>Wilhelm</option>
+        <option>Zane</option>
+        <option>Zer0</option>
+      </select>
 
-        <img>
+      <img>
 
-        <div id="gear-input">
+      <div id="gear-input">
 
-          <label for="item-input">
-            <select id="item-type" class="toggle" disabled="true" autocomplete="off">
-              <option value="weapon">Weapon</option>
-              <option value="grenade">Grenade</option>
-              <option value="shield">Shield</option>
-              <option value="misc">Misc</option>
-            </select>
-          </label>
-          <input type="text" id="item-input" class="toggle" disabled="true" placeholder="Input Gear" autocomplete="off">
-          <div class="gear-con">
-            <button id="equip-btn" class="toggle add-gear" disabled="true" autocomplete="off">Equip</button>
-            <button id="inv-btn" class="toggle add-gear" disabled="true" autocomplete="off">Inventory</button>
-          </div>
-
+        <label for="item-input">
+          <select id="item-type" class="toggle" disabled="true" autocomplete="off">
+            <option value="weapon">Weapon</option>
+            <option value="grenade">Grenade</option>
+            <option value="shield">Shield</option>
+            <option value="misc">Misc</option>
+          </select>
+        </label>
+        <input type="text" id="item-input" class="toggle" disabled="true" placeholder="Input Gear" autocomplete="off">
+        <div class="gear-con">
+          <button id="equip-btn" class="toggle add-gear" disabled="true" autocomplete="off">Equip</button>
+          <button id="inv-btn" class="toggle add-gear" disabled="true" autocomplete="off">Inventory</button>
         </div>
 
       </div>
 
-      <div id="equip-con" class="gear-cons">
-      </div>
+    </div>
 
-      <div id="inventory-con" class="gear-cons">
-      </div>
+    <div id="equip-con" class="gear-cons">
+    </div>
 
+    <div id="inventory-con" class="gear-cons">
     </div>
 
   </div>
