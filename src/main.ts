@@ -50,6 +50,17 @@ const defaultState: State = {
   ],
 };
 
+/*================================ Init state / save state ==============================*/
+
+const vaultState: State = JSON.parse(localStorage.getItem("vaultState")!) ||
+  defaultState;
+
+function saveState(): void {
+  localStorage.setItem("vaultState", JSON.stringify(vaultState));
+}
+
+/*======================================================================================*/
+
 function addItemsToUL(data: VaultData): void {
   if (data !== undefined) {
     for (const item of data.equippedItems) {
@@ -57,8 +68,8 @@ function addItemsToUL(data: VaultData): void {
       ul.dataset.type = item.type;
       let newLI = document.createElement("li");
       newLI.textContent = item.name;
-      addRemoveBtn(newLI, data);
       ul.append(newLI);
+      addRemoveBtn(newLI, data);
     }
 
     for (const item of data.inventory) {
@@ -66,20 +77,21 @@ function addItemsToUL(data: VaultData): void {
       ul.dataset.type = item.type;
       let newLI = document.createElement("li");
       newLI.textContent = item.name;
-      addRemoveBtn(newLI, data);
       ul.append(newLI);
+      addRemoveBtn(newLI, data);
     }
   }
 }
 
 function addRemoveBtn(element: HTMLLIElement, data: VaultData): void {
   const removeBtn = document.createElement("button");
-  removeBtn.textContent = "remove";
+  removeBtn.textContent = "x";
   removeBtn.id = "remove-btn";
   element.append(removeBtn);
 
   removeBtn.addEventListener("click", () => {
     deleteItemFromStateAndDOM(removeBtn, element, data);
+    saveState();
   });
 }
 
@@ -90,19 +102,21 @@ function deleteItemFromStateAndDOM(
 ): void {
   const equipCon = getElementByIdTyped<HTMLDivElement>("equip-con");
 
-  const containingDiv = btnElm.parentElement?.parentElement?.parentElement;
-  const itemType = btnElm.parentElement?.parentElement?.dataset.type;
-  const itemName = btnElm.parentElement?.firstChild?.textContent;
+  const containingDiv = btnElm?.parentElement?.parentElement?.parentElement;
+  const itemType = btnElm?.parentElement?.parentElement?.dataset.type;
+  const itemName = btnElm?.parentElement?.firstChild?.textContent;
 
   let location = data?.[
     (equipCon.id === containingDiv?.id) ? "equippedItems" : "inventory"
   ];
 
   if (location === undefined) throw new Error("'location' is undefined");
+  console.log("location", location);
 
   let index = location.findIndex((i) =>
     i.type === itemType && i.name === itemName
   );
+  console.log("index", index);
 
   if (index !== -1) location?.splice(index, 1);
 
@@ -114,6 +128,7 @@ function deleteItemFromStateAndDOM(
 //*============================================================================
 
 function main() {
+  
   /*============================ temp helper btns ===========================*/
 
   const consoleBtn = getElementByIdTyped<HTMLButtonElement>("console");
@@ -122,16 +137,6 @@ function main() {
   clearStore.addEventListener("click", () => localStorage.clear());
 
   /*=========================================================================*/
-
-  const vaultState: State = JSON.parse(localStorage.getItem("vaultState")!) ||
-    defaultState;
-  // const vaultState: State = defaultState;
-
-  const saveState = (): void => {
-    localStorage.setItem("vaultState", JSON.stringify(vaultState));
-  };
-
-  /*========================================================================*/
 
   const vaultBtns = [...document.querySelectorAll<HTMLButtonElement>(".vault")];
   const levelElm = getElementByIdTyped<HTMLParagraphElement>("level");
@@ -149,6 +154,7 @@ function main() {
   const updateVaultBtnName = (data: State): void => {
     for (const [i, btn] of vaultBtns.entries()) {
       let vault = data.vaults[i];
+
       if (vault?.name !== undefined) {
         btn.textContent = vault?.name;
       }
@@ -162,6 +168,7 @@ function main() {
 
   const updateUI = (data: State, index: number): void => {
     // selectVaultHunter();
+    saveState();
     let vault = data.vaults[index];
     if (vault?.name) displayImage(vault?.name);
     updateVaultBtnName(data);
@@ -331,7 +338,7 @@ function main() {
 
   /*=============================================*/
   consoleBtn.addEventListener("click", () => {
-    // renderEquipAndInv();
+    console.log("vaultState", vaultState.vaults);
   });
 
   consoleBtn2.addEventListener("click", () => {

@@ -1,10 +1,10 @@
 import { getElementByIdTyped } from "./utilities.js";
 
 export function renderEquipAndInv(): void {
-  const main = getElementByIdTyped<HTMLDivElement>("main");
+  const equipCon = getElementByIdTyped<HTMLDivElement>("equip-con");
+  const invCon = getElementByIdTyped<HTMLDivElement>("inventory-con");
 
-  const html = `
-  <div id="equip-con">
+  const equipHTML = `
     <h2 class="headers">Equipped Gear</h2>
     <h3 id="weapon">Weapons</h3>
     <ul id="equip-weapon-ul">
@@ -18,9 +18,9 @@ export function renderEquipAndInv(): void {
     <h3 id="misc">Misc.</h3>
     <ul id="equip-misc-ul">
     </ul>
-  </div>
+    `;
 
-  <div id="inventory-con">
+  const invHTML = `
     <h2 class="headers">Inventory</h2>
     <h3 class="inventory" id="weapon-inv">Weapons</h3>
     <ul id="inv-weapon-ul">
@@ -34,8 +34,8 @@ export function renderEquipAndInv(): void {
     <h3 class="inventory" id="misc-inv">Misc.</h3>
     <ul id="inv-misc-ul">
     </ul>
-  </div>
   `;
 
-  main.innerHTML = html;
+  equipCon.innerHTML = equipHTML;
+  invCon.innerHTML = invHTML;
 }
