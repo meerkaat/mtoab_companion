@@ -1,0 +1,91 @@
+<!DOCTYPE html>
+<html lang="en">
+
+<head>
+  <meta charset="UTF-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1.0">
+  <title>mtoab</title>
+  <link rel="stylesheet" href="reset.css" />
+  <link rel="stylesheet" href="styles.css" />
+  <script type="module" src="/dist/main.js"></script>
+</head>
+
+<body>
+  <button id="console">console.log</button>
+  <button id="console2">console.log2</button>
+  <div class="btn-con">
+    <button class="vault" id="vault0" value="false">(empty)</button>
+    <button class="vault" id="vault1" value="false">(empty)</button>
+    <button class="vault" id="vault2" value="false">(empty)</button>
+    <button class="vault" id="vault3" value="false">(empty)</button>
+  </div>
+
+  <select id="char-select" autocomplete="off">
+    <option selected="true" disabled="true" hidden="true">Select Vault Hunter</option>
+    <option value="amara">Amara</option>
+    <option value="athena">Athena</option>
+    <option value="aurelia">Aurelia</option>
+    <option value="axton">Axton</option>
+    <option value="amaraTEST">AmaraTEST</option>
+    <option value="athenaTEST">AthenaTEST</option>
+    <option value="aureliaTEST">AureliaTEST</option>
+    <option value="axtonTEST">AxtonTEST</option>
+  </select>
+
+  <p id="level">Level: <span id="level-num">0</span></p>
+  <button id="level-decrease">-</button>
+  <button id="level-increase">+</button>
+  <p id="scenario">Scenario: <span id="scene-num">0</span></p>
+  <button id="scenario-decrease">-</button>
+  <button id="scenario-increase">+</button>
+
+
+  <div id="equip-con">
+    <label for="equip-item-input">
+      <select id="equip-item-type" autocomplete="off">
+        <!-- <option selected="true" disabled="true" hidden="true">Select Gear</option> -->
+        <option value="weapons">Weapon</option>
+        <option value="grenades">Grenade</option>
+        <option value="shields">Shield</option>
+        <option value="misc">Misc</option>
+      </select>
+    </label>
+    <input type="text" id="equip-item-input" placeholder="Input Gear">
+    <button id="equip-item">Add item</button>
+    <button id="inv-add-item">Add item</button>
+    <h2>Equipped Gear</h2>
+    <p id="weapons">Weapons</p>
+    <ul id="equip-weapons-ul">
+    </ul>
+    <p id="grenades">Grenades</p>
+    <ul id="equip-grenades-ul">
+    </ul>
+    <p id="shields">Shields</p>
+    <ul id="equip-shields-ul">
+    </ul>
+    <p id="misc">Misc.</p>
+    <ul id="equip-misc-ul">
+    </ul>
+  </div>
+
+  <div id="inventory-con">
+    <h2>Inventory</h2>
+    <p class="inventory" id="weapons-inv">Weapons</p>
+    <ul id="inv-weapons-ul">
+    </ul>
+    <p class="inventory" id="grenades-inv">Grenades</p>
+    <ul id="inv-grenades-ul">
+    </ul>
+    <p class="inventory" id="shields-inv">Shields</p>
+    <ul id="inv-shields-ul">
+    </ul>
+    <p class="inventory" id="misc-inv">Misc.</p>
+    <ul id="inv-misc-ul">
+    </ul>
+  </div>
+
+  <button id="clear-storage">Clear Storage</button>
+
+</body>
+
+</html>
